@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.8.2)
 # Set project name, version and laguages here. (change as needed)
 # Version numbers are available by including "exampleConfig.h" in 
 # the source. See exampleConfig.h.in for some more details.
-project(CPP_BOILERPLATE VERSION 1.2.3.4 LANGUAGES CXX)
+project(GAMMA_RAY VERSION 1.2.3.4 LANGUAGES CXX)
 
 
 # Options: Things you can set via commandline options to cmake (e.g. -DENABLE_LTO=[ON|OFF])
@@ -44,6 +44,8 @@ set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp
 )
 set(LIBRARY_NAME engine)  # Default name for the library built from src/*.cpp (change if you wish)
+
+set(cpprestsdk_DIR /usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/) # add cpprestsdk_DIR
 
 # --------------------------------------------------------------------------------
 #                            Build! (Change as needed)

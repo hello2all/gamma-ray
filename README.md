@@ -95,4 +95,13 @@ the [setup script](setup.sh) as follows:
 The result is a fresh Git repository with one commit adding all files from the boiler plate. 
 
 ## Dependencies
+sudo apt-get update
+sudo apt-get -y install build-essential doxygen graphviz libcpprest-dev
+wget https://github.com/Kitware/CMake/releases/download/v3.18.0-rc1/cmake-3.18.0-rc1.tar.gz && tar -xzvf cmake-3.18.0-rc1.tar.gz && cd cmake-3.18.0-rc1
+./bootstrap && make
+sudo make install
+cd .. && rm -rf cmake-3.18.0-rc1
+bash
+
+
 - https://github.com/Microsoft/cpprestsdk
