@@ -1,3 +1,6 @@
 [submodule "external/doctest"]
 	path = external/doctest
 	url = https://github.com/onqtam/doctest.git
+[submodule "external/websocketpp"]
+	path = external/websocketpp
+	url = git://github.com/zaphoyd/websocketpp.git
