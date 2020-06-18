@@ -96,7 +96,7 @@ The result is a fresh Git repository with one commit adding all files from the b
 
 ## Dependencies
 sudo apt-get update
-sudo apt-get -y install build-essential doxygen graphviz libcpprest-dev
+sudo apt-get -y install build-essential doxygen graphviz ninja-build libboost-all-dev libssl1.0-dev
 wget https://github.com/Kitware/CMake/releases/download/v3.18.0-rc1/cmake-3.18.0-rc1.tar.gz && tar -xzvf cmake-3.18.0-rc1.tar.gz && cd cmake-3.18.0-rc1
 ./bootstrap && make
 sudo make install
