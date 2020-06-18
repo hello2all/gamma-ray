@@ -8,34 +8,23 @@
 
 #include <iostream>
 #include <stdlib.h>
-#include <cpprest/ws_client.h>
+#include <chrono>
+#include <boost/version.hpp>
 
-#include "exampleConfig.h"
-#include "example.h"
+#include "config.h"
 
 using namespace std;
-using namespace web;
-using namespace web::websockets::client;
 
-/*
- * Simple main program that demontrates how access
- * CMake definitions (here the version number) from source code.
- */
 int main()
 {
-  std::cout << "C++ Boiler Plate v"
-            << PROJECT_VERSION_MAJOR
-            << "."
-            << PROJECT_VERSION_MINOR
-            << "."
-            << PROJECT_VERSION_PATCH
-            << "."
-            << PROJECT_VERSION_TWEAK
-            << std::endl;
-  std::system("cat ../LICENSE");
+  auto start = chrono::high_resolution_clock::now();
+  // cout << "testing" << endl;
+  auto finish = chrono::high_resolution_clock::now();
+  cout << chrono::duration_cast<chrono::nanoseconds>(finish-start).count() << "ns\n";
+  cout << "Boost version: " << BOOST_LIB_VERSION << endl;
 
-  // Bring in the dummy class from the example source,
-  // just to show that it is accessible from main.cpp.
-  Dummy d = Dummy();
-  return d.doSomething() ? 0 : -1;
+  for(;;) {
+
+  }
+  return 0;
 }
