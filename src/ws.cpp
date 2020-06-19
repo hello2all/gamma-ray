@@ -7,13 +7,8 @@ WS::WS()
 
   wsclient.init_asio();
 
-  wsclient.set_open_handler([this](websocketpp::connection_hdl hdl) {
-    auto subscriptions = on_open_cb();
-    for (auto &subscription : subscriptions)
-    {
-      wsclient.send(
-          hdl, subscription.dump(), websocketpp::frame::opcode::text);
-    }
+  wsclient.set_open_handler([this](websocketpp::connection_hdl) {
+    on_open_cb();
   });
 
   wsclient.set_message_handler(
@@ -23,7 +18,7 @@ WS::WS()
       });
 
   wsclient.set_close_handler([this](websocketpp::connection_hdl) {
-    std::cout << "connection closed";
+    on_close_cb();
   });
 
   wsclient.set_interrupt_handler(
@@ -38,18 +33,24 @@ WS::WS()
   });
 }
 
-void WS::configure(std::string _uri,
-                   std::string _api_key,
-                   std::string _api_secret)
+void WS::configure(std::string _uri)
 {
   uri = _uri;
-  api_key = _api_key;
-  api_secret = _api_secret;
+}
+
+void WS::send(json j)
+{
+  wsclient.send(this->connection, j.dump(), websocketpp::frame::opcode::text);
 }
 
 void WS::set_on_open_cb(OnOpenCB open_cb)
 {
   on_open_cb = open_cb;
+}
+
+void WS::set_on_close_cb(OnCloseCB close_cb)
+{
+  on_close_cb = close_cb;
 }
 
 void WS::set_on_message_cb(OnMessageCB message_cb)

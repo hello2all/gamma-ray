@@ -11,23 +11,23 @@ class WS
 {
   public:
     using WSClient = websocketpp::client<websocketpp::config::asio_tls_client>;
-    using OnOpenCB = std::function<std::vector<json>()>;
+    using OnOpenCB = std::function<void()>;
+    using OnCloseCB = std::function<void()>;
     using OnMessageCB = std::function<void(json j)>;
 
     WS();
-    void configure(std::string _uri,
-                   std::string _api_key,
-                   std::string _api_secret);
+    void configure(std::string _uri);
     void set_on_open_cb(OnOpenCB open_cb);
+    void set_on_close_cb(OnCloseCB close_cb);
     void set_on_message_cb(OnMessageCB message_cb);
     void connect();
+    void send(json j);
 
   private:
     WSClient wsclient;
     WSClient::connection_ptr connection;
-    OnOpenCB on_open_cb;
+    OnOpenCB on_open_cb = [](){};
+    OnCloseCB on_close_cb = [](){};
     OnMessageCB on_message_cb;
     std::string uri;
-    std::string api_key;
-    std::string api_secret;
 };
