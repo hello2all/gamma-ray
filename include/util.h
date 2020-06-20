@@ -3,7 +3,8 @@
 #include <chrono>
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
-#include <string>
+#include <sstream>
+#include <iomanip>
 
 namespace util
 {
@@ -39,61 +40,25 @@ namespace util
 
   namespace encoding
   {
-
-    namespace
+    inline std::string hmac(const std::string secret,
+                            std::string msg)
     {
-      struct HmacCtx
+      HMAC_CTX *ctx = HMAC_CTX_new();
+      unsigned char signed_msg[EVP_MAX_MD_SIZE];
+
+      HMAC_Init_ex(ctx, secret.c_str(), (int)secret.length(), EVP_sha256(), nullptr);
+      HMAC_Update(ctx, (unsigned char *)msg.c_str(), msg.length());
+      unsigned int out_len;
+      HMAC_Final(ctx, signed_msg, &out_len);
+      HMAC_CTX_free(ctx);
+
+      std::stringstream ss;
+      for (unsigned int i = 0; i < out_len; i++)
       {
-        HMAC_CTX ctx;
-        HmacCtx() { HMAC_CTX_init(&ctx); }
-        ~HmacCtx() { HMAC_CTX_cleanup(&ctx); }
-      };
-    } // namespace
-
-    inline std::string hmac(const std::string &secret,
-                     std::string msg,
-                     std::size_t signed_len)
-    {
-      static HmacCtx hmac;
-      char signed_msg[64];
-
-      HMAC_Init_ex(
-          &hmac.ctx, secret.data(), (int)secret.size(), EVP_sha256(), nullptr);
-      HMAC_Update(&hmac.ctx, (unsigned char *)msg.data(), msg.size());
-      HMAC_Final(&hmac.ctx, (unsigned char *)signed_msg, nullptr);
-
-      return {signed_msg, signed_len};
-    }
-
-    namespace
-    {
-      constexpr char hexmap[] = {'0',
-                                 '1',
-                                 '2',
-                                 '3',
-                                 '4',
-                                 '5',
-                                 '6',
-                                 '7',
-                                 '8',
-                                 '9',
-                                 'a',
-                                 'b',
-                                 'c',
-                                 'd',
-                                 'e',
-                                 'f'};
-    }
-
-    inline std::string string_to_hex(unsigned char *data, std::size_t len)
-    {
-      std::string s(len * 2, ' ');
-      for (std::size_t i = 0; i < len; ++i)
-      {
-        s[2 * i] = hexmap[(data[i] & 0xF0) >> 4];
-        s[2 * i + 1] = hexmap[data[i] & 0x0F];
+        ss << std::setw(2) << std::setfill('0') << std::hex << static_cast<int> (signed_msg[i]);
       }
-      return s;
+
+      return (ss.str());
     }
   } // namespace encoding
 } // namespace util

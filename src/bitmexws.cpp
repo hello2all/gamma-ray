@@ -42,10 +42,9 @@ std::string BitmexWebsocket::signed_url()
   std::string path = "/realtime";
 
   std::string data = verb + path + expires;
-  std::string hmacced = util::encoding::hmac(std::string(api_secret), data, 32);
-  std::string sign = util::encoding::string_to_hex((unsigned char *)hmacced.c_str(), 32);
-
+  std::string sign = util::encoding::hmac(std::string(api_secret), data);
   std::string signed_url = this->uri + "?api-expires=" + expires + "&api-signature=" + sign + "&api-key=" + this->api_key;
+ 
   return signed_url;
 }
 

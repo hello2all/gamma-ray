@@ -1,5 +1,7 @@
 {
   "files.associations": {
-    "chrono": "cpp"
+    "chrono": "cpp",
+    "iomanip": "cpp",
+    "iosfwd": "cpp"
   }
 }
