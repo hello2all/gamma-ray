@@ -53,3 +53,8 @@ void BitmexWebsocket::on_open(WS::OnOpenCB cb)
 {
   ws.set_on_open_cb(cb);
 }
+
+void BitmexWebsocket::on_close(WS::OnCloseCB cb)
+{
+  ws.set_on_close_cb(cb);
+}
