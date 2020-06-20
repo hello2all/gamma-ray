@@ -31,6 +31,7 @@ include(LTO)
 include(Misc)
 include(Warnings)
 include(Boost)
+include(POCO)
 include(Websocketpp)
 
 # Check for LTO support.
@@ -61,6 +62,7 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(${LIBRARY_NAME} PUBLIC doctest)
 target_link_libraries(${LIBRARY_NAME} PUBLIC ${Boost_LIBRARIES})
 target_link_libraries(${LIBRARY_NAME} PUBLIC websocketpp ssl crypto)
+target_link_libraries(${LIBRARY_NAME} PUBLIC Poco::Foundation)
 
 # Set the compile options you want (change as needed).
 target_set_warnings(${LIBRARY_NAME} ENABLE ALL AS_ERROR ALL DISABLE Annoying)

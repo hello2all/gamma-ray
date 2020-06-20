@@ -15,6 +15,7 @@
 #include <future>
 #include <chrono>
 #include <thread>
+#include "Poco/Environment.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -22,12 +23,17 @@ using json = nlohmann::json;
 void waitToExe(BitmexWebsocket* cli) {
   cout << "wait to exe" << endl;
   this_thread::sleep_for(chrono::milliseconds(10000));
-  json j = {{"op", "subscribe"}, {"args", "trade"}};
+  json j = {{"op", "subscribe"}, {"args", "trade:XBTUSD"}};
   cli->send(j);
 }
 
 int main()
 {
+  cout << "POCO version: ";
+  cout << static_cast<int>(Poco::Environment::libraryVersion() >> 24) << ".";
+  cout << static_cast<int>((Poco::Environment::libraryVersion() >> 16) & 0xFF) << ".";
+  cout << static_cast<int>((Poco::Environment::libraryVersion() >> 8) & 0xFF) << endl;
+
   string uri = "wss://www.bitmex.com/realtime";
   string api_key = "";
   string api_secret = "";
