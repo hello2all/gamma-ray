@@ -43,6 +43,10 @@ void WS::send(json j)
   wsclient.send(this->connection, j.dump(), websocketpp::frame::opcode::text);
 }
 
+void WS::send(const std::string& s) {
+  wsclient.send(this->connection, s, websocketpp::frame::opcode::text);
+}
+
 void WS::set_on_open_cb(OnOpenCB open_cb)
 {
   on_open_cb = open_cb;

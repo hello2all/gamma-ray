@@ -1,1 +1,1 @@
-find_package(Poco REQUIRED COMPONENTS Foundation)
+find_package(Poco 1.10 REQUIRED COMPONENTS Foundation Util Net)
