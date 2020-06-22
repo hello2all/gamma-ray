@@ -8,6 +8,7 @@
 #include "json.hpp"
 #include "Poco/Util/Timer.h"
 #include "Poco/Util/TimerTaskAdapter.h"
+#include "Poco/Timestamp.h"
 
 using json = nlohmann::json;
 
@@ -35,8 +36,10 @@ private:
   std::string api_secret = "";
   Poco::Util::Timer timer;
   Poco::Util::TimerTask::Ptr pPingTask;
+  Poco::Timestamp last_pong_at = 0;
 
   std::string signed_url();
   void start_heartbeat();
+  void reset_heartbeat();
   void heartbeat(Poco::Util::TimerTask& task);
 };

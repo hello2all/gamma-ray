@@ -18,7 +18,7 @@ namespace util
     return Clock::now();
   }
 
-  inline chrono::milliseconds get_ms_timestamp(TimePoint time)
+  inline chrono::milliseconds get_milli_seconds_timestamp(TimePoint time)
   {
     return chrono::duration_cast<chrono::milliseconds>(time.time_since_epoch());
   }
@@ -31,6 +31,11 @@ namespace util
   inline TimePoint hr_time()
   {
     return chrono::high_resolution_clock::now();
+  }
+
+  inline long time_diff_ms(TimePoint start, TimePoint end)
+  {
+    return chrono::duration_cast<chrono::milliseconds>(end - start).count();
   }
 
   inline long time_diff_ns(TimePoint start, TimePoint end)
