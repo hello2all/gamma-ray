@@ -13,7 +13,7 @@ class WS
     using WSClient = websocketpp::client<websocketpp::config::asio_tls_client>;
     using OnOpenCB = std::function<void()>;
     using OnCloseCB = std::function<void()>;
-    using OnMessageCB = std::function<void(json j)>;
+    using OnMessageCB = std::function<void(std::string raw)>;
 
     WS();
     void configure(std::string _uri);

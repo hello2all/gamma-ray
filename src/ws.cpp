@@ -13,8 +13,8 @@ WS::WS()
 
   wsclient.set_message_handler(
       [this](websocketpp::connection_hdl, WSClient::message_ptr msg) {
-        json j = msg->get_raw_payload().c_str();
-        on_message_cb(j);
+        std::string raw = msg->get_raw_payload().c_str();
+        on_message_cb(raw);
       });
 
   wsclient.set_close_handler([this](websocketpp::connection_hdl) {

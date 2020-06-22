@@ -4,6 +4,7 @@ BitmexWebsocket::BitmexWebsocket()
 {
   ws.configure(this->uri);
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
+  ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
 }
 
 BitmexWebsocket::BitmexWebsocket(std::string uri)
@@ -11,6 +12,7 @@ BitmexWebsocket::BitmexWebsocket(std::string uri)
   this->uri = uri;
   ws.configure(this->uri);
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
+  ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
 }
 
 BitmexWebsocket::BitmexWebsocket(std::string uri, std::string api_key, std::string api_secret)
@@ -22,39 +24,53 @@ BitmexWebsocket::BitmexWebsocket(std::string uri, std::string api_key, std::stri
   std::string signed_uri = this->signed_url();
   ws.configure(signed_uri);
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
+  ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
 }
 
 BitmexWebsocket::~BitmexWebsocket()
 {
 }
 
-void BitmexWebsocket::on_message(WS::OnMessageCB cb)
+void BitmexWebsocket::on_message(std::string raw)
 {
-  ws.set_on_message_cb([this, cb](json j) {
-    cb(j);
+  if(raw == "pong")
+  {
+    this->maintain_heartbeat();
+    return;
+  }
 
-    // init heartbeat on start up
-    if (this->last_pong_at <= 0)
-    {
-      this->start_heartbeat();
-      return;
-    }
-    // reset timer if a message is received within 5 seconds
-    else if ((Poco::Timestamp() - this->last_pong_at) < 5e6)
-    {
-      std::cout << this->last_pong_at.epochMicroseconds() << "," << Poco::Timestamp().epochMicroseconds() << "," << ((Poco::Timestamp() - this->last_pong_at) < 5000000) << std::endl;
-      this->reset_heartbeat();
-      return;
-    }
-    // throw error if no messages are not received in 10 seconds
-    if ((Poco::Timestamp() - this->last_pong_at) > 10e6)
-    {
-      throw std::runtime_error("network error");
-    }
+  json msg = json::parse(raw);
 
-    // update last pong at
-    this->last_pong_at = Poco::Timestamp();
-  });
+  if (msg.contains("table"))
+  {
+    if (this->handlers.count(msg["table"].get<std::string>()))
+    {
+      // dispatch handler
+      this->handlers[msg["table"].get<std::string>()](msg);
+    }
+    else
+    {
+      this->logger.warning("Get message on un-specified table");
+    }
+    return;
+  }
+  if (msg.contains("error"))
+  {
+    this->logger.warning(msg["error"]);
+    return;
+  }
+  if (msg.contains("subscribe"))
+  {
+    this->logger.information("Subscribe to " + msg["subscribe"].get<std::string>() + " " + (msg["success"].get<bool>() ? "success" : "fail"));
+    return;
+  }
+
+  this->maintain_heartbeat();
+}
+
+void BitmexWebsocket::set_handler(const std::string h_name, std::function<void(json)> handler)
+{
+  this->handlers.insert({h_name, handler});
 }
 
 void BitmexWebsocket::connect()
@@ -62,9 +78,9 @@ void BitmexWebsocket::connect()
   ws.connect();
 }
 
-void BitmexWebsocket::send(json j)
+void BitmexWebsocket::send(json msg)
 {
-  ws.send(j);
+  ws.send(msg);
 }
 
 std::string BitmexWebsocket::signed_url()
@@ -90,7 +106,33 @@ void BitmexWebsocket::on_close(WS::OnCloseCB cb)
   ws.set_on_close_cb(cb);
 }
 
-void BitmexWebsocket::start_heartbeat()
+// maintain constant ping to verify connection
+void BitmexWebsocket::maintain_heartbeat()
+{
+  // init heartbeat on start up
+  if (this->last_pong_at <= 0)
+  {
+    this->init_heartbeat();
+    return;
+  }
+  // reset timer if a message is received within 5 seconds
+  else if ((Poco::Timestamp() - this->last_pong_at) < 5e6)
+  {
+    this->reset_heartbeat();
+    return;
+  }
+  // throw error if no messages are not received in 10 seconds
+  if ((Poco::Timestamp() - this->last_pong_at) > 10e6)
+  {
+    this->logger.error("Connection to bitmex interrupted");
+    throw std::runtime_error("network error");
+  }
+
+  // update last pong at
+  this->last_pong_at = Poco::Timestamp();
+}
+
+void BitmexWebsocket::init_heartbeat()
 {
   this->last_pong_at = Poco::Timestamp();
   this->timer.schedule(this->pPingTask, Poco::Timestamp() + 5e6);

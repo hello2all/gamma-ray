@@ -23,7 +23,7 @@ using json = nlohmann::json;
 void waitToExe(BitmexWebsocket* cli) {
   cout << "wait to exe" << endl;
   this_thread::sleep_for(chrono::milliseconds(10000));
-  json j = {{"op", "subscribe"}, {"args", "trade:XBTUSD"}};
+  json j = {{"op", "subscribe"}, {"args", {"trade:XBTUSD"}}};
   cli->send(j);
 }
 
@@ -34,7 +34,7 @@ int main()
   cout << static_cast<int>((Poco::Environment::libraryVersion() >> 16) & 0xFF) << ".";
   cout << static_cast<int>((Poco::Environment::libraryVersion() >> 8) & 0xFF) << endl;
 
-  string uri = "wss://www.bitmex.com/realtime";
+  string uri = "wss://testnet.bitmex.com/realtime";
   string api_key = "";
   string api_secret = "";
   BitmexWebsocket client(uri, api_key, api_secret);
@@ -46,8 +46,8 @@ int main()
     cout << "opened" << endl;
   });
 
-  client.on_message([](json j) {
-    cout << j << endl;
+  client.set_handler("trade", [](json msg){
+    cout << msg << endl;
   });
 
   client.connect();
