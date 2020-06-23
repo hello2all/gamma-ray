@@ -4,6 +4,7 @@ BitmexWebsocket::BitmexWebsocket()
 {
   ws.configure(this->uri);
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
+  this->pDeadSwitchTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::deadswitch);
   ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
 }
 
@@ -12,6 +13,7 @@ BitmexWebsocket::BitmexWebsocket(std::string uri)
   this->uri = uri;
   ws.configure(this->uri);
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
+  this->pDeadSwitchTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::deadswitch);
   ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
 }
 
@@ -24,6 +26,7 @@ BitmexWebsocket::BitmexWebsocket(std::string uri, std::string api_key, std::stri
   std::string signed_uri = this->signed_url();
   ws.configure(signed_uri);
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
+  this->pDeadSwitchTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::deadswitch);
   ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
 }
 
@@ -33,7 +36,7 @@ BitmexWebsocket::~BitmexWebsocket()
 
 void BitmexWebsocket::on_message(std::string raw)
 {
-  if(raw == "pong")
+  if (raw == "pong")
   {
     this->maintain_heartbeat();
     return;
@@ -98,7 +101,7 @@ std::string BitmexWebsocket::signed_url()
 
 void BitmexWebsocket::on_open(WS::OnOpenCB cb)
 {
-  ws.set_on_open_cb(cb);
+  ws.set_on_open_cb([this, cb]() {cb(); this->init_dead_mans_switch(); });
 }
 
 void BitmexWebsocket::on_close(WS::OnCloseCB cb)
@@ -149,4 +152,18 @@ void BitmexWebsocket::heartbeat(Poco::Util::TimerTask &)
 {
   std::string s = "ping";
   this->ws.send(s);
+}
+
+void BitmexWebsocket::init_dead_mans_switch()
+{
+  this->dead_mans_switch_timer.schedule(this->pDeadSwitchTask, 0, this->dead_mans_switch_update_interval);
+}
+
+void BitmexWebsocket::deadswitch(Poco::Util::TimerTask &)
+{
+  json j = {
+      {"op", "cancelAllAfter"},
+      {"args", this->cancel_all_delay}};
+
+  this->ws.send(j);
 }

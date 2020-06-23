@@ -34,11 +34,18 @@ private:
   std::string uri = "wss://www.bitmex.com/realtime";
   std::string api_key = "";
   std::string api_secret = "";
+
   Poco::Util::Timer timer;
   Poco::Util::TimerTask::Ptr pPingTask;
   Poco::Timestamp last_pong_at = 0;
+
   std::map<std::string, std::function<void(json)>> handlers;
   Poco::Logger& logger = Poco::Logger::get("gr-bitmexws");
+
+  long dead_mans_switch_update_interval = 15000; // milliseconds
+  long cancel_all_delay = 60000; // milliseconds
+  Poco::Util::Timer dead_mans_switch_timer;
+  Poco::Util::TimerTask::Ptr pDeadSwitchTask;
 
   std::string signed_url();
   void maintain_heartbeat();
@@ -46,4 +53,6 @@ private:
   void reset_heartbeat();
   void heartbeat(Poco::Util::TimerTask &task);
   void on_message(std::string raw);
+  void init_dead_mans_switch();
+  void deadswitch(Poco::Util::TimerTask &task);
 };
