@@ -3,7 +3,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/Library/Developer/CommandLineTools/usr/include/c++/v1"
             ],
             "defines": [],
             "macFrameworkPath": [],
