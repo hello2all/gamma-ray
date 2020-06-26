@@ -2,6 +2,8 @@
 #include <vector>
 #include "json.hpp"
 
+#define MAX_STORE_LENGTH 1000 
+
 using json = nlohmann::json;
 
 struct BitmexStore
@@ -16,14 +18,16 @@ public:
   BitmexDeltaParser();
   ~BitmexDeltaParser();
 
-  void onAction(const std::string &action, const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg);
+  unsigned int MAX_LEN = MAX_STORE_LENGTH;
+
+  void onAction(const std::string &action, const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg);
 
 private:
-  bool is_initialized(const std::string &table_name, const std::string &symbol, BitmexStore store);
-  void replace(const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg);
-  void insert(const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg);
-  void update(const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg);
-  void remove(const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg);
+  bool is_initialized(const std::string &table_name, const std::string &symbol, const BitmexStore &store);
+  void replace(const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg);
+  void insert(const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg);
+  void update(const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg);
+  void remove(const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg);
 
-  bool item_keys_match(std::vector<std::string> keys, json store_item, json msg_item);
+  bool item_keys_match(const std::vector<std::string> &keys, const json &store_item, const json &msg_item);
 };

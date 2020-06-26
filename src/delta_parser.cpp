@@ -8,7 +8,7 @@ BitmexDeltaParser::~BitmexDeltaParser()
 {
 }
 
-void BitmexDeltaParser::onAction(const std::string &action, const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg)
+void BitmexDeltaParser::onAction(const std::string &action, const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg)
 {
   // discard all deltas before getSymbol() call returns
   if (action != "partial" && !this->is_initialized(table_name, symbol, store))
@@ -44,7 +44,7 @@ void BitmexDeltaParser::onAction(const std::string &action, const std::string &t
   }
 }
 
-void BitmexDeltaParser::replace(const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg)
+void BitmexDeltaParser::replace(const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg)
 {
   if (!store.data.contains(table_name))
     store.data[table_name] = json::object();
@@ -57,14 +57,19 @@ void BitmexDeltaParser::replace(const std::string &table_name, const std::string
   store.keys[table_name][symbol] = msg["keys"];
 }
 
-void BitmexDeltaParser::insert(const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg)
+void BitmexDeltaParser::insert(const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg)
 {
   store.data[table_name][symbol].insert(store.data[table_name][symbol].end(), msg["data"].begin(), msg["data"].end());
 
-  // TODO: trim data for none orderbook or order data to prevent excessive memory usage
+  // trim data for none orderbook or order data to prevent excessive memory usage
+  if ((table_name != "orderBookL2_25" && table_name != "orderBookL2" && table_name != "order") && (store.data[table_name][symbol].size() > this->MAX_LEN))
+  {
+    json second_half(store.data[table_name][symbol].end() - (unsigned int)(this->MAX_LEN / 2), store.data[table_name][symbol].end());
+    second_half.swap(store.data[table_name][symbol]);
+  }
 }
 
-void BitmexDeltaParser::update(const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg)
+void BitmexDeltaParser::update(const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg)
 {
   const auto keys = store.keys[table_name][symbol].get<std::vector<std::string>>();
 
@@ -87,7 +92,7 @@ void BitmexDeltaParser::update(const std::string &table_name, const std::string 
   }
 }
 
-void BitmexDeltaParser::remove(const std::string &table_name, const std::string &symbol, BitmexStore &store, json msg)
+void BitmexDeltaParser::remove(const std::string &table_name, const std::string &symbol, BitmexStore &store, const json &msg)
 {
   std::vector<unsigned int> remove_queue;
   const auto keys = store.keys[table_name][symbol].get<std::vector<std::string>>();
@@ -114,14 +119,14 @@ void BitmexDeltaParser::remove(const std::string &table_name, const std::string 
   }
 }
 
-bool BitmexDeltaParser::is_initialized(const std::string &table_name, const std::string &symbol, BitmexStore store)
+bool BitmexDeltaParser::is_initialized(const std::string &table_name, const std::string &symbol, const BitmexStore &store)
 {
   return (store.data.contains(table_name) && store.data[table_name].contains(symbol));
 }
 
-bool BitmexDeltaParser::item_keys_match(std::vector<std::string> keys, json store_item, json msg_item)
+bool BitmexDeltaParser::item_keys_match(const std::vector<std::string> &keys, const json &store_item, const json &msg_item)
 {
-  for (std::string &key : keys)
+  for (auto key : keys)
   {
     if (store_item[key] != msg_item[key])
       return false;
