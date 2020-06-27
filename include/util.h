@@ -45,8 +45,7 @@ namespace util
 
   namespace encoding
   {
-    inline std::string hmac(const std::string secret,
-                            std::string msg)
+    inline std::string hmac(const std::string &secret, const std::string &msg)
     {
       HMAC_CTX *ctx = HMAC_CTX_new();
       unsigned char signed_msg[EVP_MAX_MD_SIZE];
@@ -60,7 +59,7 @@ namespace util
       std::stringstream ss;
       for (unsigned int i = 0; i < out_len; i++)
       {
-        ss << std::setw(2) << std::setfill('0') << std::hex << static_cast<int> (signed_msg[i]);
+        ss << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(signed_msg[i]);
       }
 
       return (ss.str());
