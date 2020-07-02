@@ -96,7 +96,7 @@ The result is a fresh Git repository with one commit adding all files from the b
 
 ## Dependencies
 sudo apt-get update
-sudo apt-get -y install build-essential doxygen graphviz ninja-build libboost-all-dev libssl-dev
+sudo apt-get -y install build-essential doxygen graphviz ninja-build libboost-all-dev libssl-dev libcpprest-dev
 
 ### install cmake 3.18
 ``` bash

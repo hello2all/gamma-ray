@@ -90,6 +90,7 @@
     "bit": "cpp",
     "locale": "cpp",
     "queue": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "*.dat": "cpp"
   }
 }

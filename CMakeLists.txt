@@ -26,6 +26,7 @@ include(Warnings)
 include(Boost)
 include(POCO)
 include(Websocketpp)
+include(Cpprestsdk)
 
 # Check for LTO support.
 find_lto(CXX)
@@ -37,6 +38,7 @@ set(SOURCES          # All .cpp files in src/
     src/ws.cpp
     src/bitmexws.cpp
     src/delta_parser.cpp
+    # src/bitmexhttp.cpp
 )
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp
@@ -56,6 +58,7 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC doctest)
 target_link_libraries(${LIBRARY_NAME} PUBLIC ${Boost_LIBRARIES})
 target_link_libraries(${LIBRARY_NAME} PUBLIC websocketpp ssl crypto)
 target_link_libraries(${LIBRARY_NAME} PUBLIC Poco::Foundation Poco::Util Poco::Net)
+target_link_libraries(${LIBRARY_NAME} PUBLIC cpprestsdk::cpprest)
 
 # Set the compile options
 target_set_warnings(${LIBRARY_NAME} ENABLE ALL AS_ERROR ALL DISABLE Annoying)
@@ -74,6 +77,7 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     "include/json.hpp"
     "include/bitmexws.h"
     "include/ws.h"
+    "include/delta_parser.h"
 )
 
 # Add an executable for the file app/main.cpp.
