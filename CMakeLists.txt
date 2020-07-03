@@ -38,7 +38,7 @@ set(SOURCES          # All .cpp files in src/
     src/ws.cpp
     src/bitmexws.cpp
     src/delta_parser.cpp
-    # src/bitmexhttp.cpp
+    src/bitmexhttp.cpp
 )
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp
@@ -78,6 +78,7 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     "include/bitmexws.h"
     "include/ws.h"
     "include/delta_parser.h"
+    "cpprest/http_client.h"
 )
 
 # Add an executable for the file app/main.cpp.
