@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/Library/Developer/CommandLineTools/usr/include/c++/v1",
-                "/usr/local/Cellar/cpprestsdk/2.10.16/include"
+                "/usr/local/Cellar/cpprestsdk/2.10.16/include",
+                "/usr/local/Cellar/poco/1.10.1/include"
             ],
             "defines": [],
             "macFrameworkPath": [],
