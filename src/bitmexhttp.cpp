@@ -25,7 +25,7 @@ http_request BitmexHttp::build_request(std::string &path, std::string &verb, std
   std::string data = verb + path + expires + body;
   std::string sign = util::encoding::hmac(std::string(api_secret), data);
 
-  http_request req(this->method_map[verb]);
+  http_request req(this->method_map.at(verb));
 
   req.set_request_uri(this->uri + path);
 
