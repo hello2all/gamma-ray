@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.8.2)
 set(TESTFILES        # All .cpp files in tests/
     main.cpp
     delta_parser.cpp
+    bitmexws.cpp
 )
 
 set(TEST_MAIN unit_tests)   # Default name for test executable (change if you wish).

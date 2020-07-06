@@ -21,6 +21,7 @@ class WS
     void set_on_close_cb(OnCloseCB close_cb);
     void set_on_message_cb(OnMessageCB message_cb);
     void connect();
+    void close();
     void send(json j);
     void send(const std::string& s);
 

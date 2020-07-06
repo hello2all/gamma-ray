@@ -78,7 +78,6 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     "include/bitmexws.h"
     "include/ws.h"
     "include/delta_parser.h"
-    "cpprest/http_client.h"
 )
 
 # Add an executable for the file app/main.cpp.

@@ -6,35 +6,59 @@ BitmexWebsocket::BitmexWebsocket()
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
   this->pDeadSwitchTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::deadswitch);
   ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
+  ws.set_on_open_cb([this]() {
+    this->init_dead_mans_switch();
+    this->connect_status = Models::ConnectivityStatus::connected;
+    this->connect_changed(this, this->connect_status);
+  });
+  ws.set_on_close_cb([this]() {
+    this->connect_status = Models::ConnectivityStatus::disconnected;
+    this->connect_changed(this, this->connect_status);
+  });
 }
 
-BitmexWebsocket::BitmexWebsocket(std::string uri)
+BitmexWebsocket::BitmexWebsocket(const std::string &uri)
+    : uri(uri)
 {
-  this->uri = uri;
   ws.configure(this->uri);
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
   this->pDeadSwitchTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::deadswitch);
   ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
+  ws.set_on_open_cb([this]() {
+    this->init_dead_mans_switch();
+    this->connect_status = Models::ConnectivityStatus::connected;
+    this->connect_changed(this, this->connect_status);
+  });
+  ws.set_on_close_cb([this]() {
+    this->connect_status = Models::ConnectivityStatus::disconnected;
+    this->connect_changed(this, this->connect_status);
+  });
 }
 
-BitmexWebsocket::BitmexWebsocket(std::string uri, std::string api_key, std::string api_secret)
+BitmexWebsocket::BitmexWebsocket(const std::string &uri, const std::string &api_key, const std::string &api_secret)
+    : uri(uri), api_key(api_key), api_secret(api_secret)
 {
-  this->uri = uri;
-  this->api_key = api_key;
-  this->api_secret = api_secret;
-
   std::string signed_uri = this->signed_url();
   ws.configure(signed_uri);
   this->pPingTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::heartbeat);
   this->pDeadSwitchTask = new Poco::Util::TimerTaskAdapter<BitmexWebsocket>(*this, &BitmexWebsocket::deadswitch);
   ws.set_on_message_cb([this](json msg) { this->on_message(msg); });
+  ws.set_on_open_cb([this]() {
+    this->init_dead_mans_switch();
+    this->connect_status = Models::ConnectivityStatus::connected;
+    this->connect_changed(this, this->connect_status);
+  });
+  ws.set_on_close_cb([this]() {
+    this->connect_status = Models::ConnectivityStatus::disconnected;
+    this->connect_changed(this, this->connect_status);
+  });
 }
 
 BitmexWebsocket::~BitmexWebsocket()
 {
 }
 
-void BitmexWebsocket::on_message(std::string raw)
+void BitmexWebsocket::on_message(const std::string &raw)
 {
   if (raw == "pong")
   {
@@ -71,7 +95,7 @@ void BitmexWebsocket::on_message(std::string raw)
   this->maintain_heartbeat();
 }
 
-void BitmexWebsocket::set_handler(const std::string h_name, std::function<void(json)> handler)
+void BitmexWebsocket::set_handler(const std::string &h_name, std::function<void(json)> handler)
 {
   this->handlers.insert({h_name, handler});
 }
@@ -81,7 +105,12 @@ void BitmexWebsocket::connect()
   ws.connect();
 }
 
-void BitmexWebsocket::send(json msg)
+void BitmexWebsocket::close()
+{
+  ws.close();
+}
+
+void BitmexWebsocket::send(json &msg)
 {
   ws.send(msg);
 }
@@ -97,16 +126,6 @@ std::string BitmexWebsocket::signed_url()
   std::string signed_url = this->uri + "?api-expires=" + expires + "&api-signature=" + sign + "&api-key=" + this->api_key;
 
   return signed_url;
-}
-
-void BitmexWebsocket::on_open(WS::OnOpenCB cb)
-{
-  ws.set_on_open_cb([this, cb]() {cb(); this->init_dead_mans_switch(); });
-}
-
-void BitmexWebsocket::on_close(WS::OnCloseCB cb)
-{
-  ws.set_on_close_cb(cb);
 }
 
 // maintain constant ping to verify connection

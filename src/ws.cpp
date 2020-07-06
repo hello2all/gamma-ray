@@ -75,3 +75,8 @@ void WS::connect()
   wsclient.connect(connection);
   wsclient.run();
 }
+
+void WS::close()
+{
+  this->wsclient.close(this->connection, websocketpp::close::status::going_away, "");
+}
