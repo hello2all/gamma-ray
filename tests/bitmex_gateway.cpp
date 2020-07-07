@@ -4,6 +4,7 @@
 #include "json.hpp"
 #include "bitmexws.h"
 #include "bitmex_gateway.h"
+#include "models.h"
 #include "Poco/Delegate.h"
 
 #define LOG(x) (std::cout << x << std::endl)
@@ -17,10 +18,10 @@ private:
   BitmexMarketDataGateway &md;
   BitmexWebsocket &ws;
   BitmexSymbolProdiver &symbol;
-  void on_market_quote(const void *, json &quote)
+  void on_market_quote(const void *, Models::MarketQuote &quote)
   {
-    // LOG(quote.dump(2));
-    CHECK(quote["data"][0]["symbol"] == symbol.symbol);
+    // LOG(quote.symbol);
+    CHECK(quote.symbol == symbol.symbol);
     ws.close();
   }
 

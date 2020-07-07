@@ -5,6 +5,9 @@
 #include <openssl/hmac.h>
 #include <sstream>
 #include <iomanip>
+#include "Poco/DateTime.h"
+#include "Poco/DateTimeParser.h"
+#include "Poco/DateTimeFormat.h"
 
 namespace util
 {
@@ -41,6 +44,18 @@ namespace util
   inline long time_diff_ns(TimePoint start, TimePoint end)
   {
     return chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+  }
+
+  namespace datetime
+  {
+    // assume UTC timezone by ignoring time zone differential
+    inline Poco::DateTime parse_iso_8601_string(const std::string &s)
+    {
+      Poco::DateTime dt;
+      int tzd;
+      Poco::DateTimeParser::parse(Poco::DateTimeFormat::ISO8601_FORMAT, s, dt, tzd);
+      return dt;
+    }
   }
 
   namespace encoding

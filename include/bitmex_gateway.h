@@ -26,7 +26,7 @@ public:
   BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymbolProdiver &symbol);
   ~BitmexMarketDataGateway();
 
-  Poco::BasicEvent<json> market_quote;
+  Poco::BasicEvent<Models::MarketQuote> market_quote;
 };
 
 class BitmexOrderEntryGateway
