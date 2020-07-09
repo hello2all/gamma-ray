@@ -38,4 +38,32 @@ namespace Models
       this->time = util::datetime::parse_iso_8601_string(q["timestamp"].get<std::string>());
     }
   };
+  enum class Side
+  {
+    Bid,
+    Ask
+  };
+  class Quote
+  {
+  public:
+    double price;
+    double size;
+    Side side;
+
+    Quote(double price, double size, Side side)
+        : price(price), size(size), side(side)
+    {
+    }
+  };
+
+  class QuoteOrder
+  {
+  public:
+    Quote quote;
+    std::string orderId;
+    QuoteOrder(Quote &quote, const std::string &orderId)
+        : quote(quote), orderId(orderId)
+    {
+    }
+  };
 } // namespace Models
