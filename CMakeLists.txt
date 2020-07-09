@@ -40,6 +40,7 @@ set(SOURCES          # All .cpp files in src/
     src/delta_parser.cpp
     src/bitmexhttp.cpp
     src/bitmex_gateway.cpp
+    src/quoter.cpp
 )
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp
