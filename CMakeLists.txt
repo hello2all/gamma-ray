@@ -41,6 +41,7 @@ set(SOURCES          # All .cpp files in src/
     src/bitmexhttp.cpp
     src/bitmex_gateway.cpp
     src/quoter.cpp
+    src/market_filtration.cpp
 )
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp

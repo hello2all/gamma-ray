@@ -28,6 +28,10 @@ namespace Models
     std::string symbol;
     Poco::DateTime time;
 
+    MarketQuote()
+    {
+    }
+
     MarketQuote(json &q)
     {
       this->askPrice = q["askPrice"].get<double>();
@@ -36,6 +40,11 @@ namespace Models
       this->bidSize = q["bidSize"].get<double>();
       this->symbol = q["symbol"].get<std::string>();
       this->time = util::datetime::parse_iso_8601_string(q["timestamp"].get<std::string>());
+    }
+
+    MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime time)
+        : askPrice(askPrice), askSize(askSize), bidPrice(bidPrice), bidSize(bidSize), symbol(symbol), time(time)
+    {
     }
   };
   enum class Side
@@ -63,6 +72,18 @@ namespace Models
     std::string orderId;
     QuoteOrder(Quote &quote, const std::string &orderId)
         : quote(quote), orderId(orderId)
+    {
+    }
+  };
+
+  class FairValue
+  {
+  public:
+    double price;
+    Poco::DateTime time;
+
+    FairValue(double price, Poco::DateTime time)
+        : price(price), time(time)
     {
     }
   };

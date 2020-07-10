@@ -6,6 +6,7 @@ set(TESTFILES        # All .cpp files in tests/
     delta_parser.cpp
     bitmexws.cpp
     bitmex_gateway.cpp
+    market_filtration.cpp
 )
 
 set(TEST_MAIN unit_tests)   # Default name for test executable (change if you wish).
