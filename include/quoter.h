@@ -2,13 +2,21 @@
 #include <vector>
 #include "models.h"
 
-class Quoter
+class QuoterBase
+{
+protected:
+  std::vector<Models::QuoteOrder> sent_quotes;
+
+public:
+  virtual std::vector<Models::QuoteOrder> quote_sent() = 0;
+};
+
+class Quoter : public QuoterBase
 {
 private:
-  std::vector<Models::QuoteOrder> sent_quotes;
 public:
   Quoter();
   ~Quoter();
 
-  std::vector<Models::QuoteOrder> quote_sent();
+  std::vector<Models::QuoteOrder> quote_sent() override;
 };
