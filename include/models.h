@@ -82,6 +82,10 @@ namespace Models
     double price;
     Poco::DateTime time;
 
+    FairValue()
+    {
+    }
+
     FairValue(double price, Poco::DateTime time)
         : price(price), time(time)
     {

@@ -42,6 +42,7 @@ set(SOURCES          # All .cpp files in src/
     src/bitmex_gateway.cpp
     src/quoter.cpp
     src/market_filtration.cpp
+    src/fair_value.cpp
 )
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp
@@ -81,6 +82,7 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     "include/bitmexws.h"
     "include/ws.h"
     "include/delta_parser.h"
+    "include/market_filtration.h"
 )
 
 # Add an executable for the file app/main.cpp.
