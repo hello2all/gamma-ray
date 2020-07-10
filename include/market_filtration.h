@@ -4,7 +4,14 @@
 #include "interfaces.h"
 #include "Poco/Delegate.h"
 
-class MarketFiltration
+class MarketFiltrationBase
+{
+public:
+  Poco::BasicEvent<Models::MarketQuote> filtered_quote;
+  virtual Models::MarketQuote get_latest() = 0;
+};
+
+class MarketFiltration : public MarketFiltrationBase
 {
 private:
   Interfaces::IMarketDataGateway &md;
@@ -18,7 +25,5 @@ public:
   MarketFiltration(Interfaces::IMarketDataGateway &md, Interfaces::IExchangeDetailsGateway &details, QuoterBase &quoter);
   ~MarketFiltration();
 
-  Poco::BasicEvent<Models::MarketQuote> filtered_quote;
-
-  Models::MarketQuote get_latest();
+  Models::MarketQuote get_latest() override;
 };
