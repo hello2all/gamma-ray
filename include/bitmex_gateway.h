@@ -5,6 +5,7 @@
 #include "models.h"
 #include "bitmexhttp.h"
 #include "bitmexws.h"
+#include "interfaces.h"
 
 class BitmexSymbolProdiver
 {
@@ -13,7 +14,7 @@ public:
   std::string symbol_with_type = "XBTUSD:Perpetual";
 };
 
-class BitmexMarketDataGateway
+class BitmexMarketDataGateway : public Interfaces::IMarketDataGateway
 {
 private:
   BitmexWebsocket &ws;
@@ -25,8 +26,6 @@ private:
 public:
   BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymbolProdiver &symbol);
   ~BitmexMarketDataGateway();
-
-  Poco::BasicEvent<Models::MarketQuote> market_quote;
 };
 
 class BitmexOrderEntryGateway
@@ -59,15 +58,11 @@ public:
   Poco::BasicEvent<json> rate_limit_update;
 };
 
-class BitmexDetailsGateway
+class BitmexDetailsGateway : public Interfaces::IExchangeDetailsGateway
 {
 public:
-  double maker_fee = -0.00025;
-  double taker_fee = 0.00075;
-  double min_tick_increment = 0.5;
-  double min_size_increment = 1;
-  double face_value = 1.0;
-  unsigned int max_leverage = 100;
+  BitmexDetailsGateway();
+  ~BitmexDetailsGateway();
 };
 
 class BitmexCombinedGateway
