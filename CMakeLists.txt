@@ -35,6 +35,7 @@ find_lto(CXX)
 #                         Locate files
 # --------------------------------------------------------------------------------
 set(SOURCES          # All .cpp files in src/
+    src/models.cpp
     src/ws.cpp
     src/bitmexws.cpp
     src/delta_parser.cpp
