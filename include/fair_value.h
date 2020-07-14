@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 #include "Poco/BasicEvent.h"
 #include "Poco/Delegate.h"
 #include "market_filtration.h"
@@ -17,7 +18,7 @@ class FairValue : public FairValueBase
 private:
   MarketFiltrationBase &mf;
   Interfaces::IExchangeDetailsGateway &details;
-  Models::FairValue latest;
+  std::optional<Models::FairValue> latest;
   void calculate_fair_value(const void *, Models::MarketQuote &mkt_quote);
 
 public:

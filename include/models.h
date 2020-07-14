@@ -45,7 +45,6 @@ namespace Models
     double bidSize;
     std::string symbol;
 
-    MarketQuote();
     MarketQuote(json &q);
     MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime time);
   };
@@ -89,7 +88,6 @@ namespace Models
   public:
     double price;
 
-    FairValue();
     FairValue(double price, Poco::DateTime time);
   };
 

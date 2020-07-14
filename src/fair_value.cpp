@@ -18,10 +18,10 @@ void FairValue::calculate_fair_value(const void *, Models::MarketQuote &filtered
   double bidPrice = filtered_quote.bidSize > 0 ? filtered_quote.bidPrice : (filtered_quote.bidPrice - this->details.min_tick_increment);
   double mid = (askPrice + bidPrice) / 2;
   this->latest = Models::FairValue(mid, filtered_quote.time);
-  this->fair_value_changed(this, this->latest);
+  this->fair_value_changed(this, this->latest.value());
 }
 
 Models::FairValue FairValue::get_latest()
 {
-  return this->latest;
+  return this->latest.value();
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 #include "quoter.h"
 #include "models.h"
 #include "interfaces.h"
@@ -17,7 +18,7 @@ private:
   Interfaces::IMarketDataGateway &md;
   Interfaces::IExchangeDetailsGateway &details;
   QuoterBase &quoter;
-  Models::MarketQuote latest;
+  std::optional<Models::MarketQuote> latest;
 
   void filter_market(const void *, Models::MarketQuote &mq);
 

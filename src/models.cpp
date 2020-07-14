@@ -10,10 +10,6 @@ namespace Models
     return dt;
   }
 
-  MarketQuote::MarketQuote()
-  {
-  }
-
   MarketQuote::MarketQuote(json &q)
   {
     this->askPrice = q["askPrice"].get<double>();
@@ -43,10 +39,6 @@ namespace Models
 
   QuoteOrder::QuoteOrder(Quote &quote, const std::string &orderId)
       : quote(quote), orderId(orderId)
-  {
-  }
-
-  FairValue::FairValue()
   {
   }
 
