@@ -5,9 +5,8 @@
 #include <openssl/hmac.h>
 #include <sstream>
 #include <iomanip>
-#include "Poco/DateTime.h"
-#include "Poco/DateTimeParser.h"
-#include "Poco/DateTimeFormat.h"
+#include <math.h>
+#include "models.h"
 
 namespace util
 {
@@ -46,15 +45,41 @@ namespace util
     return chrono::duration_cast<chrono::nanoseconds>(end - start).count();
   }
 
-  namespace datetime
+  inline double round_up(double x, double min_increment)
   {
-    // assume UTC timezone by ignoring time zone differential
-    inline Poco::DateTime parse_iso_8601_string(const std::string &s)
+    double remainder = fmod(x, min_increment);
+    if (remainder == 0)
+      return x;
+    else
+      return x + min_increment - remainder;
+  }
+
+  inline double round_down(double x, double min_increment)
+  {
+    double remainder = fmod(x, min_increment);
+    if (remainder == 0)
+      return x;
+    else
+      return floor(x / min_increment) * min_increment;
+  }
+
+  inline double round_nearest(double x, double min_increment)
+  {
+    double up = round_up(x, min_increment);
+    double down = round_down(x, min_increment);
+    return (fabs(x - down) > fabs(up - x)) ? up : down;
+  }
+
+  inline double round_side(double x, double min_increment, Models::Side side)
+  {
+    switch (side)
     {
-      Poco::DateTime dt;
-      int tzd;
-      Poco::DateTimeParser::parse(Poco::DateTimeFormat::ISO8601_FORMAT, s, dt, tzd);
-      return dt;
+    case Models::Side::Bid:
+      return round_down(x, min_increment);
+    case Models::Side::Ask:
+      return round_up(x, min_increment);
+    default:
+      return round_nearest(x, min_increment);
     }
   }
 

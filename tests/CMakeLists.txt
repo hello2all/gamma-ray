@@ -8,7 +8,8 @@ set(TESTFILES        # All .cpp files in tests/
     # bitmex_gateway.cpp
     # market_filtration.cpp
     # fair_value.cpp
-    quoting_strategies.cpp
+    # quoting_strategies.cpp
+    rounding.cpp
 )
 
 set(TEST_MAIN unit_tests)   # Default name for test executable (change if you wish).
