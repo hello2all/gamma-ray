@@ -43,6 +43,8 @@ set(SOURCES          # All .cpp files in src/
     src/quoter.cpp
     src/market_filtration.cpp
     src/fair_value.cpp
+    src/quoting_strategies.cpp
+    src/quoting_parameters.cpp
 )
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp
@@ -83,6 +85,7 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     "include/ws.h"
     "include/delta_parser.h"
     "include/market_filtration.h"
+    "include/fair_value.h"
 )
 
 # Add an executable for the file app/main.cpp.

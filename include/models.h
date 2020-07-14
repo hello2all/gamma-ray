@@ -18,6 +18,11 @@ namespace Models
     disconnected
   };
 
+  enum class QuotingMode
+  {
+    Top
+  };
+
   class MarketQuote
   {
   public:
@@ -47,11 +52,13 @@ namespace Models
     {
     }
   };
+
   enum class Side
   {
     Bid,
     Ask
   };
+
   class Quote
   {
   public:
@@ -88,6 +95,23 @@ namespace Models
 
     FairValue(double price, Poco::DateTime time)
         : price(price), time(time)
+    {
+    }
+  };
+
+  class QuotingParameters
+  {
+  public:
+    double width;
+    double size;
+    double target_base_position;
+    double position_divergence;
+    double skew_factor;
+    double trades_per_minute;
+    double trade_rate_seconds;
+
+    QuotingParameters(double width, double size, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds)
+        : width(width), size(size), target_base_position(target_base_position), position_divergence(position_divergence), skew_factor(skew_factor), trades_per_minute(trades_per_minute), trade_rate_seconds(trade_rate_seconds)
     {
     }
   };
