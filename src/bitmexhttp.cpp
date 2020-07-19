@@ -19,7 +19,7 @@ BitmexHttp::~BitmexHttp()
 {
 }
 
-http_request BitmexHttp::build_request(std::string &path, std::string &verb, std::string &body)
+http_request BitmexHttp::build_request(const std::string &path, const std::string &verb, const std::string &body)
 {
   std::string expires = std::to_string(util::get_seconds_timestamp(util::current_time()).count() + 60);
   std::string data = verb + path + expires + body;
@@ -39,7 +39,7 @@ http_request BitmexHttp::build_request(std::string &path, std::string &verb, std
   return req;
 }
 
-pplx::task<json> BitmexHttp::call(std::string &path, std::string &verb)
+pplx::task<json> BitmexHttp::call(const std::string &path, const std::string &verb)
 {
   std::string body = "";
 
@@ -57,7 +57,7 @@ pplx::task<json> BitmexHttp::call(std::string &path, std::string &verb)
       });
 }
 
-pplx::task<json> BitmexHttp::call(std::string &path, std::string &verb, json &payload)
+pplx::task<json> BitmexHttp::call(const std::string &path, const std::string &verb, const json &payload)
 {
   std::string body = payload.dump();
 

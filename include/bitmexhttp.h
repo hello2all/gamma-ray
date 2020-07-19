@@ -17,8 +17,8 @@ public:
   BitmexHttp(const std::string &uri);
   BitmexHttp(const std::string &uri, const std::string &api_key, const std::string &api_secret);
   ~BitmexHttp();
-  pplx::task<json> call(std::string &path, std::string &verb);
-  pplx::task<json> call(std::string &path, std::string &verb, json &payload);
+  pplx::task<json> call(const std::string &path, const std::string &verb);
+  pplx::task<json> call(const std::string &path, const std::string &verb, const json &payload);
 
 private:
   http_client client;
@@ -31,5 +31,5 @@ private:
       {"POST", methods::POST},
       {"DELETE", methods::DEL},
   };
-  http_request build_request(std::string &path, std::string &verb, std::string &body);
+  http_request build_request(const std::string &path, const std::string &verb, const std::string &body);
 };
