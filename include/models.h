@@ -55,6 +55,19 @@ namespace Models
     Ask
   };
 
+  enum class OrderType
+  {
+    Limit,
+    Market
+  };
+
+  enum class TimeInForce
+  {
+    GTC,
+    FOK,
+    IOC
+  };
+
   class Quote
   {
   public:
@@ -104,4 +117,78 @@ namespace Models
 
     QuotingParameters(double width, double size, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds);
   };
+
+  class NewOrder
+  {
+  public:
+    std::string symbol;
+    std::string clOrdID;
+    double price;
+    double orderQty;
+    Side side;
+    OrderType type;
+    TimeInForce time_in_force;
+    Poco::DateTime time;
+    bool post_only;
+
+    NewOrder(const std::string &symbol, const std::string &clOrdID, double price, double orderQty, Side side, OrderType type, TimeInForce time_in_force, Poco::DateTime time, bool post_only = true);
+    json to_json() const;
+  };
+
+  class ReplaceOrder
+  {
+  public:
+    std::string origClOrdID;
+    double price;
+    double orderQty;
+    Poco::DateTime time;
+
+    ReplaceOrder(const std::string &origClOrdID, double price, double orderQty, Poco::DateTime time);
+    json to_json() const;
+  };
+
+  class CancelOrder
+  {
+  public:
+    std::string clOrdID;
+    Poco::DateTime time;
+
+    CancelOrder(const std::string &clOrdID, Poco::DateTime time);
+    json to_json() const;
+  };
+
+  // class BitmexOrder
+  // {
+  // public:
+  //   std::string orderID = "";
+  //   std::string clOrdID = "";
+  //   std::string clOrdLinkID = "";
+  //   long account = 0;
+  //   std::string symbol = "XBTUSD";
+  //   std::string side = "Buy";
+  //   double price = 0;
+  //   double orderQty = 0;
+  //   double displayQty = 0;
+  //   double stopPx = 0;
+  //   double pegOffsetValue = 0;
+  //   std::string pegPriceType = 0;
+  //   std::string currency = "XBT";
+  //   std::string settlCurrency = "";
+  //   std::string ordType = "Limit";
+  //   std::string timeInForce = "GoodTillCancel";
+  //   std::string execInst = "ParticipateDoNotInitiate";
+  //   std::string contingencyType = "";
+  //   std::string exDestination = "";
+  //   std::string ordStatus = "New";
+  //   std::string triggered = "";
+  //   bool workingIndicator = true;
+  //   std::string ordRejReason = "";
+  //   double leavesQty = 0;
+  //   double cumQty = 0;
+  //   double avgPx = 0;
+  //   std::string multiLegReportingType = "";
+  //   std::string text = "";
+  //   Poco::DateTime transactTime;
+  //   Poco::DateTime timestamp;
+  // };
 } // namespace Models
