@@ -82,6 +82,7 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     <chrono>
     <thread>
     "include/json.hpp"
+    "include/bitmexhttp.h"
     "include/bitmexws.h"
     "include/ws.h"
     "include/delta_parser.h"
