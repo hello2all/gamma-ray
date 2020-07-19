@@ -29,12 +29,13 @@ http_request BitmexHttp::build_request(const std::string &path, const std::strin
 
   req.set_request_uri(this->uri + path);
 
-  req.headers().add("content-type", "application/json");
+  req.headers().add("Content-Type", "application/json");
   req.headers().add("Accept", "application/json");
   req.headers().add("X-Requested-With", "XMLHttpRequest");
   req.headers().add("api-expires", expires);
   req.headers().add("api-key", this->api_key);
   req.headers().add("api-signature", sign);
+  req.set_body(body);
 
   return req;
 }
