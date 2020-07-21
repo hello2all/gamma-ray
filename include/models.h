@@ -26,6 +26,31 @@ namespace Models
     Top
   };
 
+  enum class Side
+  {
+    Bid,
+    Ask
+  };
+
+  enum class OrderType
+  {
+    Limit,
+    Market
+  };
+
+  enum class TimeInForce
+  {
+    GTC,
+    FOK,
+    IOC
+  };
+
+  enum class Liquidity
+  {
+    Taker,
+    Maker
+  };
+
   // === FUNCTIONS ===
   Poco::DateTime iso8601_to_datetime(const std::string &s);
 
@@ -47,25 +72,6 @@ namespace Models
 
     MarketQuote(json &q);
     MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime time);
-  };
-
-  enum class Side
-  {
-    Bid,
-    Ask
-  };
-
-  enum class OrderType
-  {
-    Limit,
-    Market
-  };
-
-  enum class TimeInForce
-  {
-    GTC,
-    FOK,
-    IOC
   };
 
   class Quote
@@ -191,4 +197,18 @@ namespace Models
   //   Poco::DateTime transactTime;
   //   Poco::DateTime timestamp;
   // };
+
+  class Trade
+  {
+    std::string ID;
+    Poco::DateTime time;
+    Side side;
+    double size;
+    double price;
+    Liquidity liquidity;
+    double homeNotional;
+    double foreignNotional;
+
+    Trade(const std::string ID, Poco::DateTime time, Side side, double size, double price, Liquidity liquidity, double homeNotional, double foreignNotional);
+  };
 } // namespace Models

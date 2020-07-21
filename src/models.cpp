@@ -136,4 +136,9 @@ namespace Models
 
     return j;
   }
+
+  Trade::Trade(const std::string ID, Poco::DateTime time, Side side, double size, double price, Liquidity liquidity, double homeNotional, double foreignNotional)
+      : ID(ID), time(time), side(side), size(size), price(price), liquidity(liquidity), homeNotional(homeNotional), foreignNotional(foreignNotional)
+  {
+  }
 } // namespace Models
