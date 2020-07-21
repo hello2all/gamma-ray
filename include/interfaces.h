@@ -1,5 +1,9 @@
 #pragma once
+#include <vector>
+#include "models.h"
 #include "Poco/BasicEvent.h"
+
+using json = nlohmann::json;
 
 namespace Interfaces
 {
@@ -11,7 +15,7 @@ namespace Interfaces
 
   class IExchangeDetailsGateway
   {
-    public:
+  public:
     double maker_fee;
     double taker_fee;
     double min_tick_increment;
@@ -20,4 +24,17 @@ namespace Interfaces
     unsigned int max_leverage;
   };
 
-} // namespace interfaces
+  class IOrderEntryGateway
+  {
+  public:
+    virtual std::string generate_client_id() = 0;
+
+    virtual void batch_send_order(std::vector<Models::NewOrder> orders) = 0;
+    virtual void batch_cancel_order(std::vector<Models::CancelOrder> cancels) = 0;
+    virtual void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) = 0;
+    virtual void on_order(const void *, json &order) = 0;
+    virtual void on_execution(const void *, json &execution) = 0;
+
+    Poco::BasicEvent<Models::Trade> trade;
+  };
+} // namespace Interfaces
