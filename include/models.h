@@ -200,6 +200,7 @@ namespace Models
 
   class Trade
   {
+  public:
     std::string ID;
     Poco::DateTime time;
     Side side;
