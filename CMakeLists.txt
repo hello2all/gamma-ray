@@ -86,6 +86,9 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     <future>
     <chrono>
     <thread>
+    <algorithm>
+    <math.h>
+    <cmath>
     "${POCO_DIR}/BasicEvent.h"
     "${POCO_DIR}/Delegate.h"
     "${POCO_DIR}/UUIDGenerator.h"
@@ -99,6 +102,7 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     "${WEBSOCKETPP_DIR}/client.hpp"
     "${WEBSOCKETPP_DIR}/config/asio_client.hpp"
     "include/json.hpp"
+    "include/util.h"
     "include/bitmexhttp.h"
     "include/bitmexws.h"
     "include/delta_parser.h"
