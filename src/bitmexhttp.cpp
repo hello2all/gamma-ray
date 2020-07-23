@@ -49,12 +49,12 @@ pplx::task<json> BitmexHttp::call(const std::string &path, const std::string &ve
       .then([](http_response response) {
         if (response.status_code() != 200)
         {
-          throw std::runtime_error("Returned " + std::to_string(response.status_code()));
+          response.extract_string();
         }
         return response.extract_string();
       })
       .then([](std::string str_res) {
-        return json::parse(str_res);
+        return pplx::task_from_result(json::parse(str_res));
       });
 }
 
@@ -67,11 +67,11 @@ pplx::task<json> BitmexHttp::call(const std::string &path, const std::string &ve
       .then([](http_response response) {
         if (response.status_code() != 200)
         {
-          throw std::runtime_error("Returned " + std::to_string(response.status_code()));
+          response.extract_string();
         }
         return response.extract_string();
       })
       .then([](std::string str_res) {
-        return json::parse(str_res);
+        return pplx::task_from_result(json::parse(str_res));
       });
 }
