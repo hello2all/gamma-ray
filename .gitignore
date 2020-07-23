@@ -37,3 +37,6 @@ build/
 
 # Mac specific
 .DS_Store
+
+# external
+external/
