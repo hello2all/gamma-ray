@@ -72,8 +72,13 @@ target_set_warnings(${LIBRARY_NAME} ENABLE ALL AS_ERROR ALL DISABLE Annoying)
 # target_compile_options(${LIBRARY_NAME} ... )  # For setting manually.
 
 # Pre-compiled headers
+set(WEBSOCKETPP_DIR "external/websocketpp/websocketpp")
+set(DOCTEST_DIR "external/doctest/doctest")
+set(POCO_DIR "/usr/local/include/Poco")
+
 target_precompile_headers(${LIBRARY_NAME} PUBLIC 
     <string>
+    <vector>
     <map>
     <iostream>
     <stdlib.h>
@@ -81,10 +86,21 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     <future>
     <chrono>
     <thread>
+    "${POCO_DIR}/BasicEvent.h"
+    "${POCO_DIR}/Delegate.h"
+    "${POCO_DIR}/UUIDGenerator.h"
+    "${POCO_DIR}/DateTime.h"
+    "${POCO_DIR}/Util/Timer.h"
+    "${POCO_DIR}/Util/TimerTaskAdapter.h"
+    "${POCO_DIR}/Timestamp.h"
+    "${POCO_DIR}/Logger.h"
+    "${POCO_DIR}/DateTimeParser.h"
+    "${POCO_DIR}/DateTimeFormat.h"
+    "${WEBSOCKETPP_DIR}/client.hpp"
+    "${WEBSOCKETPP_DIR}/config/asio_client.hpp"
     "include/json.hpp"
     "include/bitmexhttp.h"
     "include/bitmexws.h"
-    "include/ws.h"
     "include/delta_parser.h"
     "include/market_filtration.h"
     "include/fair_value.h"
