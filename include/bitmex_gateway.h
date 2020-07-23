@@ -6,6 +6,9 @@
 #include "bitmexhttp.h"
 #include "bitmexws.h"
 #include "interfaces.h"
+#include "Poco/UUIDGenerator.h"
+#include "Poco/DateTime.h"
+#include "delta_parser.h"
 
 class BitmexSymbolProdiver
 {
@@ -28,18 +31,38 @@ public:
   ~BitmexMarketDataGateway();
 };
 
-class BitmexOrderEntryGateway
+class BitmexOrderEntryGateway : public Interfaces::IOrderEntryGateway
 {
-public:
-  BitmexOrderEntryGateway();
-  ~BitmexOrderEntryGateway();
-  void send_order();
-  void cancel_order();
-  void replace_order();
+private:
+  BitmexHttp &http;
+  BitmexWebsocket &ws;
+  BitmexDeltaParser &parser;
+  BitmexStore &store;
+  BitmexSymbolProdiver &symbol;
+  std::string execution_channel = "execution:XBTUSD";
+  const std::string execution_handle = "execution";
+  std::string order_channel = "order:XBTUSD";
+  const std::string order_handle = "order";
+  Poco::UUIDGenerator id_generator = Poco::UUIDGenerator();
 
-  void batch_send_order();
-  void batch_cancel_order();
-  void batch_replace_order();
+  static Models::Liquidity decode_liquidity(const std::string &l);
+  static Models::Side decode_side(const std::string &s);
+  void subscribe(const void *, Models::ConnectivityStatus &cs);
+  void on_order(const void *, json &order) override;
+  void on_execution(const void *, json &execution) override;
+
+public:
+  BitmexOrderEntryGateway(BitmexHttp &http, BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol);
+  ~BitmexOrderEntryGateway();
+
+  std::string generate_client_id() override;
+
+  void batch_send_order(std::vector<Models::NewOrder> orders) override;
+  void batch_cancel_order(std::vector<Models::CancelOrder> cancels) override;
+  void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) override;
+  unsigned int cancel_all() override;
+
+  Poco::BasicEvent<Models::Trade> trade;
 };
 
 class BitmexPositionGateway

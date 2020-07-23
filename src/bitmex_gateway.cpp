@@ -25,12 +25,178 @@ void BitmexMarketDataGateway::subscribe_to_quote(const void *, Models::Connectiv
   }
 }
 
-BitmexOrderEntryGateway::BitmexOrderEntryGateway()
+BitmexOrderEntryGateway::BitmexOrderEntryGateway(BitmexHttp &http, BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol)
+    : http(http), ws(ws), parser(parser), store(store), symbol(symbol)
 {
+  this->order_channel = "order:" + symbol.symbol;
+  this->execution_channel = "execution:" + symbol.symbol;
+  ws.set_handler(this->execution_handle, [this](json execution) {
+    this->on_execution(this, execution);
+  });
+  ws.set_handler(this->order_handle, [this](json order) {
+    this->on_order(this, order);
+  });
+  ws.connect_changed += Poco::delegate(this, &BitmexOrderEntryGateway::subscribe);
 }
 
 BitmexOrderEntryGateway::~BitmexOrderEntryGateway()
 {
+  ws.connect_changed -= Poco::delegate(this, &BitmexOrderEntryGateway::subscribe);
+}
+
+void BitmexOrderEntryGateway::subscribe(const void *, Models::ConnectivityStatus &cs)
+{
+  if (cs == Models::ConnectivityStatus::connected)
+  {
+    json j = {{"op", "subscribe"}, {"args", {this->order_channel, this->execution_channel}}};
+    ws.send(j);
+  }
+}
+
+std::string BitmexOrderEntryGateway::generate_client_id()
+{
+  return id_generator.createRandom().toString();
+}
+
+void BitmexOrderEntryGateway::batch_send_order(std::vector<Models::NewOrder> orders)
+{
+  const std::string path = "/api/v1/order/bulk";
+  const std::string verb = "POST";
+  json payload;
+  payload["orders"] = json::array();
+  for (const auto &order : orders)
+  {
+    payload["orders"].push_back(order.to_json());
+  }
+
+  this->http.call(path, verb, payload).then([](pplx::task<json> previous_task) {
+    try
+    {
+      previous_task.get();
+      // std::cout << Poco::DateTime() - orders[0].time << std::end;
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+  });
+}
+
+void BitmexOrderEntryGateway::batch_cancel_order(std::vector<Models::CancelOrder> cancels)
+{
+  const std::string path = "/api/v1/order";
+  const std::string verb = "DELETE";
+  json payload;
+  payload["clOrdID"] = json::array();
+  for (const auto &cancel : cancels)
+  {
+    payload["clOrdID"].push_back(cancel.clOrdID);
+  }
+
+  this->http.call(path, verb, payload).then([](pplx::task<json> previous_task) {
+    try
+    {
+      previous_task.get();
+      // std::cout << Poco::DateTime() - orders[0].time << std::end;
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+  });
+}
+
+void BitmexOrderEntryGateway::batch_replace_order(std::vector<Models::ReplaceOrder> replaces)
+{
+  const std::string path = "/api/v1/order/bulk";
+  const std::string verb = "PUT";
+  json payload;
+  payload["orders"] = json::array();
+  for (const auto &replace : replaces)
+  {
+    payload["orders"].push_back(replace.to_json());
+  }
+
+  this->http.call(path, verb, payload).then([](pplx::task<json> previous_task) {
+    try
+    {
+      previous_task.get();
+      // std::cout << Poco::DateTime() - orders[0].time << std::end;
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+  });
+}
+
+unsigned int BitmexOrderEntryGateway::cancel_all()
+{
+  const std::string path = "/api/v1/order/all";
+  const std::string verb = "DELETE";
+  json payload = {
+      {"symbol", this->symbol.symbol}};
+
+  unsigned int opens = 0;
+  this->http.call(path, verb, payload)
+      .then([&opens](json res) {
+        opens = static_cast<unsigned int>(res.size());
+      })
+      .wait();
+
+  return opens;
+}
+
+void BitmexOrderEntryGateway::on_order(const void *, json &order)
+{
+  this->parser.onAction(order["action"], order["table"], this->symbol.symbol, this->store, order);
+}
+
+Models::Side BitmexOrderEntryGateway::decode_side(const std::string &s)
+{
+  if (s == "Buy")
+  {
+    return Models::Side::Bid;
+  }
+  // if (s == "Sell")
+  else
+  {
+    return Models::Side::Ask;
+  }
+}
+
+Models::Liquidity BitmexOrderEntryGateway::decode_liquidity(const std::string &l)
+{
+  if (l == "AddedLiquidity")
+  {
+    return Models::Liquidity::Maker;
+  }
+  // if (l == "RemovedLiquidity")
+  else
+  {
+    return Models::Liquidity::Taker;
+  }
+}
+
+void BitmexOrderEntryGateway::on_execution(const void *, json &execution)
+{
+  for (const auto &e : execution["data"])
+  {
+    if (e["execType"].get<std::string>() == "Trade")
+    {
+      Models::Trade t(
+          e["execID"].get<std::string>(),
+          Models::iso8601_to_datetime(e["timestamp"].get<std::string>()),
+          BitmexOrderEntryGateway::decode_side(e["side"].get<std::string>()),
+          e["lastQty"].get<double>(),
+          e["lastPx"].get<double>(),
+          BitmexOrderEntryGateway::decode_liquidity(e["lastLiquidityInd"].get<std::string>()),
+          e["homeNotional"].get<double>(),
+          e["foreignNotional"].get<double>());
+
+      this->trade(this, t);
+    }
+  }
 }
 
 BitmexPositionGateway::BitmexPositionGateway()
