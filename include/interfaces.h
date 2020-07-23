@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <optional>
 #include "models.h"
 #include "Poco/BasicEvent.h"
 
@@ -26,6 +27,10 @@ namespace Interfaces
 
   class IOrderEntryGateway
   {
+  protected:
+    virtual void on_order(const void *, json &order) = 0;
+    virtual void on_execution(const void *, json &execution) = 0;
+
   public:
     virtual std::string generate_client_id() = 0;
 
@@ -33,9 +38,24 @@ namespace Interfaces
     virtual void batch_cancel_order(std::vector<Models::CancelOrder> cancels) = 0;
     virtual void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) = 0;
     virtual unsigned int cancel_all() = 0;
-    virtual void on_order(const void *, json &order) = 0;
-    virtual void on_execution(const void *, json &execution) = 0;
 
     Poco::BasicEvent<Models::Trade> trade;
+  };
+
+  class IPositionGateway
+  {
+  protected:
+    virtual void on_position(const void *, json &position) = 0;
+    virtual void on_margin(const void *, json &margin) = 0;
+
+  public:
+    virtual std::optional<json> get_latest_position() = 0;
+    virtual std::optional<json> get_latest_margin() = 0;
+  };
+
+  class IRateLimitMonitor
+  {
+  public:
+    virtual bool is_rate_limited() = 0;
   };
 } // namespace Interfaces
