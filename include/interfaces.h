@@ -32,7 +32,7 @@ namespace Interfaces
     virtual void batch_send_order(std::vector<Models::NewOrder> orders) = 0;
     virtual void batch_cancel_order(std::vector<Models::CancelOrder> cancels) = 0;
     virtual void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) = 0;
-    virtual int cancel_all() = 0;
+    virtual unsigned int cancel_all() = 0;
     virtual void on_order(const void *, json &order) = 0;
     virtual void on_execution(const void *, json &execution) = 0;
 
