@@ -51,6 +51,13 @@ namespace Models
     Maker
   };
 
+  enum class Currency
+  {
+    XBt,
+    ETH,
+    USD
+  };
+
   // === FUNCTIONS ===
   Poco::DateTime iso8601_to_datetime(const std::string &s);
 
@@ -212,4 +219,43 @@ namespace Models
 
     Trade(const std::string ID, Poco::DateTime time, Side side, double size, double price, Liquidity liquidity, double homeNotional, double foreignNotional);
   };
+
+  class Skew
+  {
+  public:
+    double value;
+    Poco::DateTime time;
+
+    Skew(double value, Poco::DateTime time);
+  };
+
+  // class Position
+  // {
+  // public:
+  //   std::string symbol;
+  //   long currentQty;
+  //   double homeNotional;
+  //   double foreignNotioanl;
+  //   double avgEntryPrice;
+  //   double markPrice;
+  //   double liquidationPrice;
+  //   double realisedPnl;
+  //   double unrealisedPnl;
+  //   Poco::DateTime time;
+
+  //   Position(const std::string &symbol, double homeNotional, double foreignNotional, double avgEntryPrice, double markPrice, double liquidationPrice, double unrealisedPnl, double realisedPnl, Poco::DateTime time);
+  // };
+
+  // class Margin
+  // {
+  // public:
+  //   Currency currency;
+  //   long amount;
+  //   long availableMargin;
+  //   long initMargin;
+  //   long maintMargin;
+  //   Poco::DateTime time;
+
+  //   Margin(Currency currency, long amount, long availableMargin, long initMargin, long maintMargin, Poco::DateTime time);
+  // };
 } // namespace Models

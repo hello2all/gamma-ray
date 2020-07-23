@@ -141,4 +141,19 @@ namespace Models
       : ID(ID), time(time), side(side), size(size), price(price), liquidity(liquidity), homeNotional(homeNotional), foreignNotional(foreignNotional)
   {
   }
+
+  Skew::Skew(double value, Poco::DateTime time)
+      : value(value), time(time)
+  {
+  }
+
+  // Position::Position(const std::string &symbol, double homeNotional, double foreignNotional, double avgEntryPrice, double markPrice, double liquidationPrice, double unrealisedPnl, double realisedPnl, Poco::DateTime time)
+  //     : symbol(symbol), homeNotional(homeNotional), foreignNotioanl(foreignNotioanl), avgEntryPrice(avgEntryPrice), markPrice(markPrice), liquidationPrice(liquidationPrice), unrealisedPnl(unrealisedPnl), realisedPnl(realisedPnl), time(time)
+  // {
+  // }
+
+  // Margin::Margin(Currency currency, long amount, long availableMargin, long initMargin, long maintMargin, Poco::DateTime time)
+  //     : currency(currency), amount(amount), availableMargin(availableMargin), initMargin(initMargin), maintMargin(maintMargin), time(time)
+  // {
+  // }
 } // namespace Models
