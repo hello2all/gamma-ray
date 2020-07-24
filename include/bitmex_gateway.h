@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 #include "Poco/BasicEvent.h"
 #include "Poco/Delegate.h"
 #include "json.hpp"
@@ -45,6 +46,9 @@ private:
   const std::string order_handle = "order";
   Poco::UUIDGenerator id_generator = Poco::UUIDGenerator();
 
+  std::optional<json> latest_position;
+  std::optional<json> latest_margin;
+
   static Models::Liquidity decode_liquidity(const std::string &l);
   static Models::Side decode_side(const std::string &s);
   void subscribe(const void *, Models::ConnectivityStatus &cs);
@@ -65,20 +69,35 @@ public:
   Poco::BasicEvent<Models::Trade> trade;
 };
 
-class BitmexPositionGateway
+class BitmexPositionGateway : public Interfaces::IPositionGateway
 {
+private:
+  BitmexWebsocket &ws;
+  BitmexDeltaParser &parser;
+  BitmexStore &store;
+  BitmexSymbolProdiver &symbol;
+  std::string position_channel = "position:XBTUSD";
+  const std::string position_handle = "position";
+  const std::string margin_channel = "margin";
+  const std::string margin_handle = "margin";
+
+  void subscribe(const void *, Models::ConnectivityStatus &cs);
+  void on_position(const void *, json &position) override;
+  void on_margin(const void *, json &margin) override;
+
 public:
-  BitmexPositionGateway();
+  BitmexPositionGateway(BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol);
   ~BitmexPositionGateway();
-  Poco::BasicEvent<json> position_update;
+
+  std::optional<json> get_latest_position() override;
+  std::optional<json> get_latest_margin() override;
 };
 
-class BitmexRateLimit
+class BitmexRateLimit : public Interfaces::IRateLimitMonitor
 {
 public:
   BitmexRateLimit();
   ~BitmexRateLimit();
-  Poco::BasicEvent<json> rate_limit_update;
 };
 
 class BitmexDetailsGateway : public Interfaces::IExchangeDetailsGateway

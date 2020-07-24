@@ -157,3 +157,41 @@ TEST_CASE("Bitmex order entry gateway")
 
   handle.get();
 }
+
+TEST_CASE("Bitmex position gateway")
+{
+  string ws_uri = "wss://testnet.bitmex.com/realtime";
+  string http_uri = "https://testnet.bitmex.com";
+  string api_key = "iCDc_MrgK2bfZOaRKhz5K99A";
+  string api_secret = "VJN9dBwrBInY2dY-SMVzDkb1suv9DQRwxmYKiEh7TcJVTg0w";
+
+  BitmexWebsocket ws_cli(ws_uri, api_key, api_secret);
+  BitmexHttp http_cli(http_uri, api_key, api_secret);
+  BitmexSymbolProdiver symbol;
+  BitmexStore store;
+  BitmexDeltaParser parser;
+
+  BitmexOrderEntryGateway oe(http_cli, ws_cli, parser, store, symbol);
+  BitmexPositionGateway pg(ws_cli, parser, store, symbol);
+
+  auto handle = std::async(std::launch::async, [&ws_cli]() {
+    ws_cli.connect();
+  });
+
+  bool haveValues = false;
+  while (!haveValues)
+  {
+    auto pos = pg.get_latest_position();
+    auto margin = pg.get_latest_margin();
+    if (pos && margin)
+      haveValues = true;
+    else
+      sleep(1);
+  }
+
+  auto pos = pg.get_latest_position();
+  auto margin = pg.get_latest_margin();
+  CHECK(pos.value().contains("currentQty"));
+  CHECK(margin.value().contains("amount"));
+  ws_cli.close();
+}

@@ -199,12 +199,67 @@ void BitmexOrderEntryGateway::on_execution(const void *, json &execution)
   }
 }
 
-BitmexPositionGateway::BitmexPositionGateway()
+BitmexPositionGateway::BitmexPositionGateway(BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol)
+    : ws(ws), parser(parser), store(store), symbol(symbol)
 {
+  this->position_channel = "position:" + symbol.symbol;
+  ws.set_handler(this->position_handle, [this](json position) {
+    this->on_position(this, position);
+  });
+  ws.set_handler(this->margin_handle, [this](json margin) {
+    this->on_margin(this, margin);
+  });
+  ws.connect_changed += Poco::delegate(this, &BitmexPositionGateway::subscribe);
 }
 
 BitmexPositionGateway::~BitmexPositionGateway()
 {
+  ws.connect_changed -= Poco::delegate(this, &BitmexPositionGateway::subscribe);
+}
+
+void BitmexPositionGateway::subscribe(const void *, Models::ConnectivityStatus &cs)
+{
+  if (cs == Models::ConnectivityStatus::connected)
+  {
+    json j = {{"op", "subscribe"}, {"args", {this->position_channel, this->margin_channel}}};
+    ws.send(j);
+  }
+}
+
+void BitmexPositionGateway::on_position(const void *, json &position)
+{
+  this->parser.onAction(position["action"], position["table"], this->symbol.symbol, this->store, position);
+}
+
+void BitmexPositionGateway::on_margin(const void *, json &margin)
+{
+  this->parser.onAction(margin["action"], margin["table"], this->symbol.symbol, this->store, margin);
+}
+
+std::optional<json> BitmexPositionGateway::get_latest_position()
+{
+  if (this->store.data.contains("position"))
+  {
+    auto end = this->store.data["position"][this->symbol.symbol].end();
+    return *(--end);
+  }
+  else
+  {
+    return std::nullopt;
+  }
+}
+
+std::optional<json> BitmexPositionGateway::get_latest_margin()
+{
+  if (this->store.data.contains("margin"))
+  {
+    auto end = this->store.data["margin"][this->symbol.symbol].end();
+    return *(--end);
+  }
+  else
+  {
+    return std::nullopt;
+  }
 }
 
 BitmexRateLimit::BitmexRateLimit()
