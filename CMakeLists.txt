@@ -47,6 +47,7 @@ set(SOURCES          # All .cpp files in src/
     src/quoting_strategies.cpp
     src/quoting_parameters.cpp
     src/skew.cpp
+    src/quoting_engine.cpp
 )
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp

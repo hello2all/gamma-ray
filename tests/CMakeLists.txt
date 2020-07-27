@@ -11,8 +11,8 @@ set(TESTFILES        # All .cpp files in tests/
     # fair_value.cpp
     # quoting_strategies.cpp
     # rounding.cpp
-    # quoting_engine.cpp
-    skew.cpp
+    quoting_engine.cpp
+    # skew.cpp
 )
 
 set(TEST_MAIN unit_tests)   # Default name for test executable (change if you wish).
