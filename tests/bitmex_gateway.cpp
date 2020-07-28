@@ -195,3 +195,35 @@ TEST_CASE("Bitmex position gateway")
   CHECK(margin.value().contains("amount"));
   ws_cli.close();
 }
+
+TEST_CASE("bitmex rate limit monitor")
+{
+  string http_uri = "https://testnet.bitmex.com";
+  string api_key = "iCDc_MrgK2bfZOaRKhz5K99A";
+  string api_secret = "VJN9dBwrBInY2dY-SMVzDkb1suv9DQRwxmYKiEh7TcJVTg0w";
+
+  BitmexRateLimit monitor;
+  BitmexHttp http_cli(http_uri, api_key, api_secret, monitor);
+
+  const std::string path = "/api/v1/stats";
+  const std::string verb = "GET";
+
+  int remain;
+  http_cli.call(path, verb)
+      .then([](json) {
+      })
+      .wait();
+  remain = monitor.remain;
+
+  http_cli.call(path, verb)
+      .then([](json) {
+      })
+      .wait();
+
+  CHECK((remain - monitor.remain) == 1);
+  CHECK(monitor.is_rate_limited() == false);
+
+  monitor.update_rate_limit(60, 11, Poco::DateTime());
+
+  CHECK(monitor.is_rate_limited() == true);
+}

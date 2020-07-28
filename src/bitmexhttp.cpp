@@ -1,17 +1,17 @@
 #include "bitmexhttp.h"
 
-BitmexHttp::BitmexHttp()
-    : client(web::http::client::http_client(web::uri(uri)))
+BitmexHttp::BitmexHttp(Interfaces::IRateLimitMonitor &monitor)
+    : client(web::http::client::http_client(web::uri(uri))), monitor(monitor)
 {
 }
 
-BitmexHttp::BitmexHttp(const std::string &uri)
-    : client(web::http::client::http_client(web::uri(uri))), uri(uri)
+BitmexHttp::BitmexHttp(const std::string &uri, Interfaces::IRateLimitMonitor &monitor)
+    : client(web::http::client::http_client(web::uri(uri))), uri(uri), monitor(monitor)
 {
 }
 
-BitmexHttp::BitmexHttp(const std::string &uri, const std::string &api_key, const std::string &api_secret)
-    : client(web::http::client::http_client(web::uri(uri))), uri(uri), api_key(api_key), api_secret(api_secret)
+BitmexHttp::BitmexHttp(const std::string &uri, const std::string &api_key, const std::string &api_secret, Interfaces::IRateLimitMonitor &monitor)
+    : client(web::http::client::http_client(web::uri(uri))), uri(uri), api_key(api_key), api_secret(api_secret), monitor(monitor)
 {
 }
 
@@ -46,11 +46,11 @@ pplx::task<json> BitmexHttp::call(const std::string &path, const std::string &ve
 
   http_request req = this->build_request(path, verb, body);
   return this->client.request(req)
-      .then([](http_response response) {
-        if (response.status_code() != 200)
-        {
-          response.extract_string();
-        }
+      .then([this](http_response response) {
+        int limit = std::stoi(response.headers()["x-ratelimit-limit"]);
+        int remain = std::stoi(response.headers()["x-ratelimit-remaining"]);
+        Poco::DateTime next_reset(Poco::Timestamp::fromEpochTime(std::stoi(response.headers()["x-ratelimit-reset"])));
+        this->monitor.update_rate_limit(limit, remain, next_reset);
         return response.extract_string();
       })
       .then([](std::string str_res) {
@@ -64,11 +64,11 @@ pplx::task<json> BitmexHttp::call(const std::string &path, const std::string &ve
 
   http_request req = this->build_request(path, verb, body);
   return this->client.request(req)
-      .then([](http_response response) {
-        if (response.status_code() != 200)
-        {
-          response.extract_string();
-        }
+      .then([this](http_response response) {
+        int limit = std::stoi(response.headers()["x-ratelimit-limit"]);
+        int remain = std::stoi(response.headers()["x-ratelimit-remaining"]);
+        Poco::DateTime next_reset = Models::iso8601_to_datetime(response.headers()["x-ratelimit-reset"]);
+        this->monitor.update_rate_limit(limit, remain, next_reset);
         return response.extract_string();
       })
       .then([](std::string str_res) {

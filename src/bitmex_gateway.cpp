@@ -270,6 +270,25 @@ BitmexRateLimit::~BitmexRateLimit()
 {
 }
 
+bool BitmexRateLimit::is_rate_limited()
+{
+  if (this->threshold > (static_cast<float>(this->remain) / static_cast<float>(this->limit)))
+  {
+    return true;
+  }
+else 
+  {
+    return false;
+  }
+}
+
+void BitmexRateLimit::update_rate_limit(int limit, int remain, Poco::DateTime next_reset)
+{
+  this->limit = limit;
+  this->remain = remain;
+  this->next_reset = next_reset;
+}
+
 BitmexDetailsGateway::BitmexDetailsGateway()
 {
   this->maker_fee = -0.00025;

@@ -95,9 +95,18 @@ public:
 
 class BitmexRateLimit : public Interfaces::IRateLimitMonitor
 {
+private:
+  const float threshold = 0.2;
+  int limit = 60;
+  Poco::DateTime next_reset;
+
 public:
+  int remain = 60;
   BitmexRateLimit();
   ~BitmexRateLimit();
+
+  void update_rate_limit(int limit, int remain, Poco::DateTime next_reset) override;
+  bool is_rate_limited() override;
 };
 
 class BitmexDetailsGateway : public Interfaces::IExchangeDetailsGateway

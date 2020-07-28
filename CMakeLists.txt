@@ -91,6 +91,7 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     <algorithm>
     <math.h>
     <cmath>
+    <unistd.h>
     "${POCO_DIR}/BasicEvent.h"
     "${POCO_DIR}/Delegate.h"
     "${POCO_DIR}/UUIDGenerator.h"

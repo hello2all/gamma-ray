@@ -56,6 +56,7 @@ namespace Interfaces
   class IRateLimitMonitor
   {
   public:
+    virtual void update_rate_limit(int limit, int remain, Poco::DateTime next_reset) = 0;
     virtual bool is_rate_limited() = 0;
   };
 } // namespace Interfaces

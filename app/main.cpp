@@ -37,9 +37,9 @@ int main()
   // cout << static_cast<int>((Poco::Environment::libraryVersion() >> 16) & 0xFF) << ".";
   // cout << static_cast<int>((Poco::Environment::libraryVersion() >> 8) & 0xFF) << endl;
 
-  string uri = "wss://testnet.bitmex.com/realtime";
-  string api_key = "";
-  string api_secret = "";
+  // string uri = "wss://testnet.bitmex.com/realtime";
+  // string api_key = "";
+  // string api_secret = "";
   // BitmexWebsocket client(uri, api_key, api_secret);
 
   // auto t1 = std::async(std::launch::async, waitToExe, &client);
@@ -54,14 +54,14 @@ int main()
   // });
 
   // client.connect();
-  string http_uri = "https://testnet.bitmex.com";
-  BitmexHttp http(http_uri, api_key, api_secret);
-  string path = "/api/v1/position";
-  string verb = "GET";
-  http.call(path, verb)
-      .then([](json res) {
-        cout << res.dump(2) << endl;
-      })
-      .wait();
+  // string http_uri = "https://testnet.bitmex.com";
+  // BitmexHttp http(http_uri, api_key, api_secret);
+  // string path = "/api/v1/position";
+  // string verb = "GET";
+  // http.call(path, verb)
+  //     .then([](json res) {
+  //       cout << res.dump(2) << endl;
+  //     })
+  //     .wait();
   return 0;
 }
