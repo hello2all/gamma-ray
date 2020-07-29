@@ -1,7 +1,7 @@
 #include "market_filtration.h"
 
-MarketFiltration::MarketFiltration(Interfaces::IMarketDataGateway &md, Interfaces::IExchangeDetailsGateway &details, QuoterBase &quoter)
-    : md(md), details(details), quoter(quoter)
+MarketFiltration::MarketFiltration(Interfaces::IMarketDataGateway &md, Interfaces::IOrderEntryGateway &oe, Interfaces::IExchangeDetailsGateway &details)
+    : md(md), oe(oe), details(details)
 {
   md.market_quote += Poco::delegate(this, &MarketFiltration::filter_market);
 }
@@ -13,26 +13,25 @@ MarketFiltration::~MarketFiltration()
 
 void MarketFiltration::filter_market(const void *, Models::MarketQuote &mq)
 {
-  // get quotes sent (qs)
-  auto quote_sent = this->quoter.quote_sent();
-  // init filtered market filtration (fmq)
+  // get quotes sent
+  json open_orders = this->oe.open_orders();
+  // init filtered market filtration
   this->latest = mq;
 
-  // loop qs
-  for (auto const &q : quote_sent)
+  // loop open orders
+  for (auto const &o : open_orders)
   {
-    switch (q.quote.side)
+    if (o["side"].get<std::string>() == "Buy")
     {
-    case Models::Side::Bid:
       // if market quote diff to quotes sent: deduct size
-      if (q.quote.price - mq.bidPrice < this->details.min_tick_increment)
-        this->latest.value().bidSize = this->latest.value().bidSize - q.quote.size;
-      break;
-    case Models::Side::Ask:
+      if (o["price"].get<double>() - mq.bidPrice < this->details.min_tick_increment)
+        this->latest.value().bidSize = this->latest.value().bidSize - o["orderQty"].get<double>();
+    }
+    else
+    {
       // if market quote diff to quotes sent: deduct size
-      if (q.quote.price - mq.askPrice < this->details.min_tick_increment)
-        this->latest.value().askSize = this->latest.value().askSize - q.quote.size;
-      break;
+      if (o["price"].get<double>() - mq.askPrice < this->details.min_tick_increment)
+        this->latest.value().askSize = this->latest.value().askSize - o["orderQty"].get<double>();
     }
   }
   this->filtered_quote(this, this->latest.value());
