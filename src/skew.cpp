@@ -14,7 +14,7 @@ std::optional<Models::Skew> Skew::get_latest()
     double skew_factor = params.skew_factor;
     double size = params.size;
     double tick = this->details.min_tick_increment;
-    double qty = pos.value()["currentQty"].get<long>();
+    double qty = pos.value().size() > 0 ? pos.value()[0]["currentQty"].get<double>() : 0;
     double skew_value = qty >= 0 ? -(std::floor(qty / size) * skew_factor * tick) : -(std::ceil(qty / size) * skew_factor * tick);
     return Models::Skew(skew_value, Poco::DateTime());
   }
