@@ -37,11 +37,6 @@ namespace Models
     this->time = time;
   }
 
-  QuoteOrder::QuoteOrder(Quote &quote, const std::string &orderId)
-      : quote(quote), orderId(orderId)
-  {
-  }
-
   FairValue::FairValue(double price, Poco::DateTime time)
       : price(price)
   {

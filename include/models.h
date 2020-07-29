@@ -100,15 +100,6 @@ namespace Models
     TwoSidedQuote(Quote bid, Quote ask, Poco::DateTime time);
   };
 
-  class QuoteOrder
-  {
-  public:
-    Quote quote;
-    std::string orderId;
-
-    QuoteOrder(Quote &quote, const std::string &orderId);
-  };
-
   class FairValue : public Timestamped
   {
   public:
