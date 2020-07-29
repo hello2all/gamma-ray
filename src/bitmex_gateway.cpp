@@ -149,7 +149,14 @@ unsigned int BitmexOrderEntryGateway::cancel_all()
 
 void BitmexOrderEntryGateway::on_order(const void *, json &order)
 {
+  // update store
   this->parser.onAction(order["action"], order["table"], this->symbol.symbol, this->store, order);
+  // keep only open orders
+  auto begin = this->store.data["orders"][this->symbol.symbol].begin();
+  auto end = this->store.data["orders"][this->symbol.symbol].end();
+  json opens = json::array();
+  std::copy_if(begin, end, std::back_inserter(opens), [](json o) { return o["leavesQty"].get<long>() > 0; });
+  opens.swap(this->store.data["orders"][this->symbol.symbol]);
 }
 
 Models::Side BitmexOrderEntryGateway::decode_side(const std::string &s)
@@ -199,6 +206,11 @@ void BitmexOrderEntryGateway::on_execution(const void *, json &execution)
   }
 }
 
+json BitmexOrderEntryGateway::open_orders()
+{
+  return this->store.data["orders"][this->symbol.symbol];
+}
+
 BitmexPositionGateway::BitmexPositionGateway(BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol)
     : ws(ws), parser(parser), store(store), symbol(symbol)
 {
@@ -240,8 +252,7 @@ std::optional<json> BitmexPositionGateway::get_latest_position()
 {
   if (this->store.data.contains("position"))
   {
-    auto end = this->store.data["position"][this->symbol.symbol].end();
-    return *(--end);
+    return this->store.data["position"][this->symbol.symbol];
   }
   else
   {
@@ -251,7 +262,7 @@ std::optional<json> BitmexPositionGateway::get_latest_position()
 
 std::optional<json> BitmexPositionGateway::get_latest_margin()
 {
-  if (this->store.data.contains("margin"))
+  if (this->store.data.contains("margin") && (this->store.data["margin"][this->symbol.symbol].size() > 0))
   {
     auto end = this->store.data["margin"][this->symbol.symbol].end();
     return *(--end);
@@ -272,11 +283,16 @@ BitmexRateLimit::~BitmexRateLimit()
 
 bool BitmexRateLimit::is_rate_limited()
 {
-  if (this->threshold > (static_cast<float>(this->remain) / static_cast<float>(this->limit)))
+  if (this->is_limited && (Poco::DateTime() < this->next_reset))
   {
     return true;
   }
-else 
+  else if (this->is_limited == true)
+  {
+    this->is_limited = false;
+    return false;
+  }
+  else
   {
     return false;
   }
@@ -287,10 +303,14 @@ void BitmexRateLimit::update_rate_limit(int limit, int remain, Poco::DateTime ne
   this->limit = limit;
   this->remain = remain;
   this->next_reset = next_reset;
+
+  if (this->threshold > (static_cast<float>(this->remain) / static_cast<float>(this->limit)))
+    this->is_limited = true;
 }
 
 BitmexDetailsGateway::BitmexDetailsGateway()
 {
+  this->pair = "XBTUSD";
   this->maker_fee = -0.00025;
   this->taker_fee = 0.00075;
   this->min_tick_increment = 0.5;

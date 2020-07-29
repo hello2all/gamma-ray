@@ -17,6 +17,7 @@ namespace Interfaces
   class IExchangeDetailsGateway
   {
   public:
+    std::string pair;
     double maker_fee;
     double taker_fee;
     double min_tick_increment;
@@ -38,6 +39,7 @@ namespace Interfaces
     virtual void batch_cancel_order(std::vector<Models::CancelOrder> cancels) = 0;
     virtual void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) = 0;
     virtual unsigned int cancel_all() = 0;
+    virtual json open_orders() = 0;
 
     Poco::BasicEvent<Models::Trade> trade;
   };

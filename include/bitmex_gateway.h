@@ -14,8 +14,11 @@
 class BitmexSymbolProdiver
 {
 public:
-  std::string symbol = "XBTUSD";
-  std::string symbol_with_type = "XBTUSD:Perpetual";
+  const std::string base = "XBt";
+  const std::string quote = "USD";
+  const std::string underlying = "XBt";
+  const std::string symbol = "XBTUSD";
+  const std::string symbol_with_type = "XBTUSD:Perpetual";
 };
 
 class BitmexMarketDataGateway : public Interfaces::IMarketDataGateway
@@ -65,6 +68,7 @@ public:
   void batch_cancel_order(std::vector<Models::CancelOrder> cancels) override;
   void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) override;
   unsigned int cancel_all() override;
+  json open_orders() override;
 
   Poco::BasicEvent<Models::Trade> trade;
 };
@@ -96,6 +100,7 @@ public:
 class BitmexRateLimit : public Interfaces::IRateLimitMonitor
 {
 private:
+  bool is_limited = false;
   const float threshold = 0.2;
   int limit = 60;
   Poco::DateTime next_reset;
