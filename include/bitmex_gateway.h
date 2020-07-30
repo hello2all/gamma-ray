@@ -9,6 +9,7 @@
 #include "interfaces.h"
 #include "Poco/UUIDGenerator.h"
 #include "Poco/DateTime.h"
+#include "Poco/Timespan.h"
 #include "delta_parser.h"
 
 class BitmexSymbolProdiver
@@ -68,7 +69,7 @@ public:
   void batch_cancel_order(std::vector<Models::CancelOrder> cancels) override;
   void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) override;
   unsigned int cancel_all() override;
-  json open_orders() override;
+  std::optional<json> open_orders() override;
 
   Poco::BasicEvent<Models::Trade> trade;
 };

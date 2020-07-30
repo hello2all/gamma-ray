@@ -39,7 +39,7 @@ namespace Interfaces
     virtual void batch_cancel_order(std::vector<Models::CancelOrder> cancels) = 0;
     virtual void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) = 0;
     virtual unsigned int cancel_all() = 0;
-    virtual json open_orders() = 0;
+    virtual std::optional<json> open_orders() = 0;
 
     Poco::BasicEvent<Models::Trade> trade;
   };

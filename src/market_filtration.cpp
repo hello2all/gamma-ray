@@ -14,12 +14,15 @@ MarketFiltration::~MarketFiltration()
 void MarketFiltration::filter_market(const void *, Models::MarketQuote &mq)
 {
   // get quotes sent
-  json open_orders = this->oe.open_orders();
+  auto open_orders = this->oe.open_orders();
+  if (!open_orders)
+    return;
+
   // init filtered market filtration
   this->latest = mq;
 
   // loop open orders
-  for (auto const &o : open_orders)
+  for (auto const &o : open_orders.value())
   {
     if (o["side"].get<std::string>() == "Buy")
     {

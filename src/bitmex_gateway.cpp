@@ -73,13 +73,16 @@ void BitmexOrderEntryGateway::batch_send_order(std::vector<Models::NewOrder> ord
     try
     {
       previous_task.get();
-      // std::cout << Poco::DateTime() - orders[0].time << std::end;
     }
     catch (const std::exception &e)
     {
       std::cerr << e.what() << '\n';
     }
   });
+  Poco::DateTime now;
+  Poco::Timespan diff = now - orders[0].time;
+  int ms = diff.totalMicroseconds();
+  std::cout << "tick to trade; " << ms << "us" << std::endl;
 }
 
 void BitmexOrderEntryGateway::batch_cancel_order(std::vector<Models::CancelOrder> cancels)
@@ -97,7 +100,6 @@ void BitmexOrderEntryGateway::batch_cancel_order(std::vector<Models::CancelOrder
     try
     {
       previous_task.get();
-      // std::cout << Poco::DateTime() - orders[0].time << std::end;
     }
     catch (const std::exception &e)
     {
@@ -121,13 +123,16 @@ void BitmexOrderEntryGateway::batch_replace_order(std::vector<Models::ReplaceOrd
     try
     {
       previous_task.get();
-      // std::cout << Poco::DateTime() - orders[0].time << std::end;
     }
     catch (const std::exception &e)
     {
       std::cerr << e.what() << '\n';
     }
   });
+  Poco::DateTime now;
+  Poco::Timespan diff = now - replaces[0].time;
+  int ms = diff.totalMicroseconds();
+  std::cout << "tick to trade; " << ms << "us" << std::endl;
 }
 
 unsigned int BitmexOrderEntryGateway::cancel_all()
@@ -152,11 +157,11 @@ void BitmexOrderEntryGateway::on_order(const void *, json &order)
   // update store
   this->parser.onAction(order["action"], order["table"], this->symbol.symbol, this->store, order);
   // keep only open orders
-  auto begin = this->store.data["orders"][this->symbol.symbol].begin();
-  auto end = this->store.data["orders"][this->symbol.symbol].end();
+  auto begin = this->store.data["order"][this->symbol.symbol].begin();
+  auto end = this->store.data["order"][this->symbol.symbol].end();
   json opens = json::array();
   std::copy_if(begin, end, std::back_inserter(opens), [](json o) { return o["leavesQty"].get<long>() > 0; });
-  opens.swap(this->store.data["orders"][this->symbol.symbol]);
+  opens.swap(this->store.data["order"][this->symbol.symbol]);
 }
 
 Models::Side BitmexOrderEntryGateway::decode_side(const std::string &s)
@@ -206,9 +211,16 @@ void BitmexOrderEntryGateway::on_execution(const void *, json &execution)
   }
 }
 
-json BitmexOrderEntryGateway::open_orders()
+std::optional<json> BitmexOrderEntryGateway::open_orders()
 {
-  return this->store.data["orders"][this->symbol.symbol];
+  if (this->store.data.contains("order"))
+  {
+    return this->store.data["order"][this->symbol.symbol];
+  }
+  else
+  {
+    return std::nullopt;
+  }
 }
 
 BitmexPositionGateway::BitmexPositionGateway(BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol)
