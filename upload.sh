@@ -1,0 +1,1 @@
+scp ./build/main ubuntu@54.195.186.38:~
