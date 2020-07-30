@@ -164,7 +164,7 @@ void BitmexWebsocket::reset_heartbeat()
 {
   this->timer.cancel();
   this->last_pong_at = Poco::Timestamp();
-  this->timer.schedule(this->pPingTask, Poco::Timestamp() + 5e6);
+  this->timer.schedule(this->pPingTask, Poco::Timestamp() + 3e6);
 }
 
 void BitmexWebsocket::heartbeat(Poco::Util::TimerTask &)
