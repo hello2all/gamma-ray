@@ -67,7 +67,7 @@ pplx::task<json> BitmexHttp::call(const std::string &path, const std::string &ve
       .then([this](http_response response) {
         int limit = std::stoi(response.headers()["x-ratelimit-limit"]);
         int remain = std::stoi(response.headers()["x-ratelimit-remaining"]);
-        Poco::DateTime next_reset = Models::iso8601_to_datetime(response.headers()["x-ratelimit-reset"]);
+        Poco::DateTime next_reset(Poco::Timestamp::fromEpochTime(std::stoi(response.headers()["x-ratelimit-reset"])));
         this->monitor.update_rate_limit(limit, remain, next_reset);
         return response.extract_string();
       })
