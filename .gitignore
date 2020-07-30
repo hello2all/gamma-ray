@@ -33,7 +33,8 @@
 *.x
 
 # Build directory
-build/
+debug/
+release/
 
 # Mac specific
 .DS_Store
