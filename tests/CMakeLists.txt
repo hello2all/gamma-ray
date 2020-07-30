@@ -6,7 +6,7 @@ set(TESTFILES        # All .cpp files in tests/
     # delta_parser.cpp
     # bitmexws.cpp
     # bitmexhttp.cpp
-    bitmex_gateway.cpp
+    # bitmex_gateway.cpp
     # market_filtration.cpp
     # fair_value.cpp
     # quoting_strategies.cpp

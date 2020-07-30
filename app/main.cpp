@@ -7,61 +7,50 @@
 #endif
 
 #include <iostream>
-#include <stdlib.h>
 #include "config.h"
-#include "json.hpp"
 #include "bitmexws.h"
-#include "util.h"
-#include <future>
-#include <chrono>
-#include <thread>
-#include "Poco/Environment.h"
 #include "bitmexhttp.h"
-#include <cpprest/http_client.h>
-
-using namespace std;
-using json = nlohmann::json;
-
-// void waitToExe(BitmexWebsocket *cli)
-// {
-//   cout << "wait to exe" << endl;
-//   this_thread::sleep_for(chrono::milliseconds(10000));
-//   json j = {{"op", "subscribe"}, {"args", {"quote:XBTUSD"}}};
-//   cli->send(j);
-// }
+#include "bitmex_gateway.h"
+#include "delta_parser.h"
+#include "fair_value.h"
+#include "market_filtration.h"
+#include "models.h"
+#include "quote_dispatcher.h"
+#include "quoting_engine.h"
+#include "quoting_parameters.h"
+#include "quoting_strategies.h"
+#include "skew.h"
 
 int main()
 {
-  // cout << "POCO version: ";
-  // cout << static_cast<int>(Poco::Environment::libraryVersion() >> 24) << ".";
-  // cout << static_cast<int>((Poco::Environment::libraryVersion() >> 16) & 0xFF) << ".";
-  // cout << static_cast<int>((Poco::Environment::libraryVersion() >> 8) & 0xFF) << endl;
+  std::string ws_uri = "wss://testnet.bitmex.com/realtime";
+  std::string http_uri = "https://testnet.bitmex.com";
+  std::string api_key = "iCDc_MrgK2bfZOaRKhz5K99A";
+  std::string api_secret = "VJN9dBwrBInY2dY-SMVzDkb1suv9DQRwxmYKiEh7TcJVTg0w";
+  Models::QuotingParameters params(Models::QuotingMode::Top, 0.5, 25.0, 0, 100.0, 1.0, 5.0, 300.0);
 
-  // string uri = "wss://testnet.bitmex.com/realtime";
-  // string api_key = "";
-  // string api_secret = "";
-  // BitmexWebsocket client(uri, api_key, api_secret);
+  QuotingStrategies::Top top;
+  std::vector<QuotingStrategies::QuotingStyle *> quoting_styles;
+  quoting_styles.push_back(&top);
+  QuotingStrategies::QuotingStyleRegistry quoting_style_registry(quoting_styles);
 
-  // auto t1 = std::async(std::launch::async, waitToExe, &client);
-  // cout << "in b4 async end" << endl;
+  BitmexRateLimit rl;
+  BitmexDetailsGateway details;
+  BitmexWebsocket ws_cli(ws_uri, api_key, api_secret);
+  BitmexHttp http_cli(http_uri, api_key, api_secret, rl);
 
-  // client.on_open([](){
-  //   cout << "opened" << endl;
-  // });
+  BitmexSymbolProdiver symbol;
+  BitmexStore store;
+  BitmexDeltaParser parser;
+  BitmexMarketDataGateway md(ws_cli, symbol);
+  BitmexOrderEntryGateway oe(http_cli, ws_cli, parser, store, symbol);
+  BitmexPositionGateway pg(ws_cli, parser, store, symbol);
 
-  // client.set_handler("quote", [](json msg){
-  //   cout << msg.dump(2) << endl;
-  // });
-
-  // client.connect();
-  // string http_uri = "https://testnet.bitmex.com";
-  // BitmexHttp http(http_uri, api_key, api_secret);
-  // string path = "/api/v1/position";
-  // string verb = "GET";
-  // http.call(path, verb)
-  //     .then([](json res) {
-  //       cout << res.dump(2) << endl;
-  //     })
-  //     .wait();
-  return 0;
+  MarketFiltration mf(md, oe, details);
+  FairValue fv(mf, details);
+  QuotingParameters qp(params);
+  Skew skew(qp, pg, details);
+  QuotingEngine engine(quoting_style_registry, fv, qp, mf, skew, oe, details);
+  QuoteDispatcher dispatcher(store, engine, oe, pg, rl, details);
+  ws_cli.connect();
 }
