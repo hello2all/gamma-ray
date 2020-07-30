@@ -19,7 +19,7 @@ QuotingEngine::~QuotingEngine()
   oe.trade -= Poco::delegate(this, &QuotingEngine::on_trade);
 }
 
-void QuotingEngine::on_filtered_quote(void const *, Models::MarketQuote &filtered_quote)
+void QuotingEngine::on_filtered_quote(const void *, Models::MarketQuote &filtered_quote)
 {
   auto fair_value = this->fv.get_latest();
   auto params = this->qp.get_latest();
@@ -35,11 +35,11 @@ void QuotingEngine::on_filtered_quote(void const *, Models::MarketQuote &filtere
   this->set_latest(two_sided_quote);
 }
 
-// void QuotingEngine::on_fair_value(void const *, Models::FairValue &fair_value)
+// void QuotingEngine::on_fair_value(const void *, Models::FairValue &fair_value)
 // {
 // }
 
-void QuotingEngine::on_quoting_parameters(void const *, Models::QuotingParameters &quoting_parameters)
+void QuotingEngine::on_quoting_parameters(const void *, Models::QuotingParameters &quoting_parameters)
 {
   auto fair_value = this->fv.get_latest();
   auto filtered_quote = this->mf.get_latest();
@@ -54,7 +54,7 @@ void QuotingEngine::on_quoting_parameters(void const *, Models::QuotingParameter
   this->set_latest(two_sided_quote);
 }
 
-void QuotingEngine::on_trade(void const *, Models::Trade &)
+void QuotingEngine::on_trade(const void *, Models::Trade &)
 {
   auto fair_value = this->fv.get_latest();
   auto filtered_quote = this->mf.get_latest();
@@ -90,7 +90,6 @@ void QuotingEngine::set_latest(Models::TwoSidedQuote &two_sided_quote)
 
 Models::TwoSidedQuote QuotingEngine::calc_quote(Models::MarketQuote &filtered_quote, Models::FairValue &fair_value, Models::QuotingParameters &quoting_parameters, Models::Skew &skew, double min_tick_increment, double min_size_increment, Poco::DateTime time)
 {
-
   QuotingStrategies::QuoteInput input(filtered_quote, fair_value, quoting_parameters, min_tick_increment, min_size_increment);
   QuotingStrategies::GeneratedQuote unrounded = this->registry.get(quoting_parameters.mode)->generate_quote(input);
   // apply skew

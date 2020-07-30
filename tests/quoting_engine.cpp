@@ -25,7 +25,6 @@ public:
 
   Models::MarketQuote get_latest() override
   {
-
     this->filtered_quote(this, this->latest.value());
     return latest.value();
   }
@@ -61,7 +60,7 @@ public:
   {
     if (this->enable_pos)
     {
-      json pos = {{"currentQty", this->pos_qty}};
+      json pos = {{{"currentQty", this->pos_qty}}};
       return pos;
     }
     else
@@ -72,7 +71,7 @@ public:
 
   std::optional<json> get_latest_margin() override
   {
-    json margin;
+    json margin = {{"availableMargin", 12054123}};
     return margin;
   }
 
@@ -107,6 +106,11 @@ public:
     return 0;
   }
 
+  json open_orders() override
+  {
+    return json::array();
+  };
+
   void trigger_trade()
   {
     Models::Trade t(this->generate_client_id(), Poco::DateTime(), Models::Side::Ask, 10.0, 9500, Models::Liquidity::Maker, 123456, 10);
@@ -118,7 +122,7 @@ class TestQuotingEngineListener
 {
 private:
   QuotingEngine &engine;
-  void on_new_quote(void const *, Models::TwoSidedQuote &)
+  void on_new_quote(const void *, Models::TwoSidedQuote &two_sided_quote)
   {
     this->call_counter++;
   }
