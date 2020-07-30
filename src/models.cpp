@@ -10,14 +10,17 @@ namespace Models
     return dt;
   }
 
-  MarketQuote::MarketQuote(json &q)
+  MarketQuote::MarketQuote(json &q, bool use_server_time)
   {
     this->askPrice = q["askPrice"].get<double>();
     this->askSize = q["askSize"].get<double>();
     this->bidPrice = q["bidPrice"].get<double>();
     this->bidSize = q["bidSize"].get<double>();
     this->symbol = q["symbol"].get<std::string>();
-    this->time = iso8601_to_datetime(q["timestamp"].get<std::string>());
+    if (use_server_time)
+      this->time = iso8601_to_datetime(q["timestamp"].get<std::string>());
+    else
+      this->time = Poco::DateTime();
   }
 
   MarketQuote::MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime time)

@@ -77,7 +77,7 @@ namespace Models
     double bidSize;
     std::string symbol;
 
-    MarketQuote(json &q);
+    MarketQuote(json &q, bool use_server_time = false);
     MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime time);
   };
 
