@@ -76,42 +76,47 @@ void QuoteDispatcher::converge_orders(std::vector<Models::Quote> bids, std::vect
 
   unsigned int buys_matched = 0;
   unsigned int sells_matched = 0;
+  unsigned int sum = bids.size() + asks.size();
 
   json existing_orders = this->oe.open_orders().value();
-  std::cout << existing_orders.dump(2) << std::endl;
 
   // find orders can be amended
   for (const auto &order : existing_orders)
   {
-    Models::Quote *p_desired_quote = nullptr;
-    if (order["side"] == "Buy")
+    if ((buys_matched + sells_matched) >= sum)
     {
-      std::cout << "found replacible bid" << std::endl;
-      p_desired_quote = &bids[buys_matched];
-      buys_matched += 1;
+      std::string clOrdID = order["clOrdID"].get<std::string>();
+      Models::CancelOrder cancel(clOrdID, time);
+      to_cancel.push_back(cancel);
     }
     else
     {
-      std::cout << "found replacible ask" << std::endl;
-      p_desired_quote = &asks[sells_matched];
-      sells_matched += 1;
-    }
-
-    if (p_desired_quote)
-    {
-      if ((p_desired_quote->size != order["leavesQty"].get<double>()) || (p_desired_quote->price != order["price"].get<double>()))
+      Models::Quote *p_desired_quote = nullptr;
+      if (order["side"] == "Buy")
       {
-        std::cout << "need replace" << std::endl;
-        std::string clOrdID = order["clOrdID"].get<std::string>();
-        Models::ReplaceOrder replace(clOrdID, p_desired_quote->price, p_desired_quote->size, time);
-        to_amend.push_back(replace);
+        p_desired_quote = &bids[buys_matched];
+        buys_matched += 1;
+      }
+      else
+      {
+        p_desired_quote = &asks[sells_matched];
+        sells_matched += 1;
+      }
+
+      if (p_desired_quote)
+      {
+        if ((p_desired_quote->size != order["leavesQty"].get<double>()) || (p_desired_quote->price != order["price"].get<double>()))
+        {
+          std::string clOrdID = order["clOrdID"].get<std::string>();
+          Models::ReplaceOrder replace(clOrdID, p_desired_quote->price, p_desired_quote->size, time);
+          to_amend.push_back(replace);
+        }
       }
     }
   }
 
   while (buys_matched < bids.size())
   {
-    std::cout << "new bid" << std::endl;
     std::string clOrdID = oe.generate_client_id();
     const Models::Quote *p_desired_quote = &bids[buys_matched];
     Models::NewOrder new_order(this->details.pair, clOrdID, p_desired_quote->price, p_desired_quote->size, p_desired_quote->side, Models::OrderType::Limit, Models::TimeInForce::GTC, time, true);
@@ -121,7 +126,6 @@ void QuoteDispatcher::converge_orders(std::vector<Models::Quote> bids, std::vect
 
   while (sells_matched < asks.size())
   {
-    std::cout << "new ask" << std::endl;
     std::string clOrdID = oe.generate_client_id();
     const Models::Quote *p_desired_quote = &asks[sells_matched];
     Models::NewOrder new_order(this->details.pair, clOrdID, p_desired_quote->price, p_desired_quote->size, p_desired_quote->side, Models::OrderType::Limit, Models::TimeInForce::GTC, time, true);
@@ -131,19 +135,16 @@ void QuoteDispatcher::converge_orders(std::vector<Models::Quote> bids, std::vect
 
   if (to_amend.size() > 0)
   {
-    std::cout << "batch replace" << to_amend.size() << std::endl;
     this->oe.batch_replace_order(to_amend);
   }
 
   if (to_create.size() > 0)
   {
-    std::cout << "batch send" << to_create.size() << std::endl;
     this->oe.batch_send_order(to_create);
   }
 
   if (to_cancel.size() > 0)
   {
-    std::cout << "batch send" << to_cancel.size() << std::endl;
     this->oe.batch_cancel_order(to_cancel);
   }
 }
