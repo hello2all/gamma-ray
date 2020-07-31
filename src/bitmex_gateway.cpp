@@ -9,8 +9,8 @@ BitmexMarketDataGateway::BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymb
     double bidSize = order_book["data"].back()["bids"][0][1].get<double>();
     double askPrice = order_book["data"].back()["asks"][0][0].get<double>();
     double askSize = order_book["data"].back()["asks"][0][1].get<double>();
-    Poco::DateTime time = Models::iso8601_to_datetime(order_book["data"].back()["timestamp"].get<std::string>());
-    Models::MarketQuote mq(askPrice, askSize, bidPrice, bidSize, this->symbol.symbol, time);
+    // Poco::DateTime time = Models::iso8601_to_datetime(order_book["data"].back()["timestamp"].get<std::string>());
+    Models::MarketQuote mq(askPrice, askSize, bidPrice, bidSize, this->symbol.symbol, Poco::DateTime());
     this->market_quote(this, mq);
   });
   ws.connect_changed += Poco::delegate(this, &BitmexMarketDataGateway::subscribe_to_quote);
