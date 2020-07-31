@@ -5,7 +5,7 @@ BitmexMarketDataGateway::BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymb
 {
   this->quote_channel = "quote:" + symbol.symbol;
   ws.set_handler(this->quote_handle, [this](json quote) {
-    Models::MarketQuote mq(quote["data"][0]);
+    Models::MarketQuote mq(quote["data"].back());
     this->market_quote(this, mq);
   });
   ws.connect_changed += Poco::delegate(this, &BitmexMarketDataGateway::subscribe_to_quote);
