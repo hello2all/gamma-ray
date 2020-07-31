@@ -102,7 +102,7 @@ namespace Models
         {"TimeInForce", tif}};
 
     if (post_only)
-      j["exeInst"] = "ParticipateDoNotInitiate";
+      j["execInst"] = "ParticipateDoNotInitiate";
 
     return j;
   }
