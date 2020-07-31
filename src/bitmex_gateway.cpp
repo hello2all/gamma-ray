@@ -3,9 +3,14 @@
 BitmexMarketDataGateway::BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymbolProdiver &symbol)
     : ws(ws), symbol(symbol)
 {
-  this->quote_channel = "quote:" + symbol.symbol;
-  ws.set_handler(this->quote_handle, [this](json quote) {
-    Models::MarketQuote mq(quote["data"].back());
+  this->order_book_channel = "orderBook10:" + symbol.symbol;
+  ws.set_handler(this->order_book_handle, [this](json order_book) {
+    double bidPrice = order_book["data"].back()["bids"][0][0].get<double>();
+    double bidSize = order_book["data"].back()["bids"][0][1].get<double>();
+    double askPrice = order_book["data"].back()["asks"][0][0].get<double>();
+    double askSize = order_book["data"].back()["asks"][0][1].get<double>();
+    Poco::DateTime time = Models::iso8601_to_datetime(order_book["data"].back()["timestamp"].get<std::string>());
+    Models::MarketQuote mq(askPrice, askSize, bidPrice, bidSize, this->symbol.symbol, time);
     this->market_quote(this, mq);
   });
   ws.connect_changed += Poco::delegate(this, &BitmexMarketDataGateway::subscribe_to_quote);
@@ -20,7 +25,7 @@ void BitmexMarketDataGateway::subscribe_to_quote(const void *, Models::Connectiv
 {
   if (cs == Models::ConnectivityStatus::connected)
   {
-    json j = {{"op", "subscribe"}, {"args", {this->quote_channel}}};
+    json j = {{"op", "subscribe"}, {"args", {this->order_book_channel}}};
     ws.send(j);
   }
 }

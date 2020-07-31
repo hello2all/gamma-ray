@@ -27,8 +27,8 @@ class BitmexMarketDataGateway : public Interfaces::IMarketDataGateway
 private:
   BitmexWebsocket &ws;
   BitmexSymbolProdiver &symbol;
-  std::string quote_channel = "quote:XBTUSD";
-  const std::string quote_handle = "quote";
+  std::string order_book_channel = "orderBook10:XBTUSD";
+  const std::string order_book_handle = "orderBook10";
   void subscribe_to_quote(const void *, Models::ConnectivityStatus &cs);
 
 public:
