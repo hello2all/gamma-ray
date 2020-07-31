@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <functional>
+#include <future>
 #include "util.h"
 #include "models.h"
 #include "ws.h"

@@ -60,9 +60,9 @@ BitmexWebsocket::~BitmexWebsocket()
 
 void BitmexWebsocket::on_message(const std::string &raw)
 {
+  std::async(std::launch::async, [this]() { this->maintain_heartbeat(); });
   if (raw == "pong")
   {
-    this->maintain_heartbeat();
     return;
   }
 
@@ -91,8 +91,6 @@ void BitmexWebsocket::on_message(const std::string &raw)
     this->logger.information("Subscribe to " + msg["subscribe"].get<std::string>() + " " + (msg["success"].get<bool>() ? "success" : "fail"));
     return;
   }
-
-  this->maintain_heartbeat();
 }
 
 void BitmexWebsocket::set_handler(const std::string &h_name, std::function<void(json)> handler)

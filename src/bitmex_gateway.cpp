@@ -82,7 +82,7 @@ void BitmexOrderEntryGateway::batch_send_order(std::vector<Models::NewOrder> ord
   Poco::DateTime now;
   Poco::Timespan diff = now - orders[0].time;
   int ms = diff.totalMicroseconds();
-  std::cout << "tick to trade; " << ms << "us" << std::endl;
+  std::cout << "tick to trade: " << ms << "us" << std::endl;
 }
 
 void BitmexOrderEntryGateway::batch_cancel_order(std::vector<Models::CancelOrder> cancels)
@@ -132,7 +132,7 @@ void BitmexOrderEntryGateway::batch_replace_order(std::vector<Models::ReplaceOrd
   Poco::DateTime now;
   Poco::Timespan diff = now - replaces[0].time;
   int ms = diff.totalMicroseconds();
-  std::cout << "tick to trade; " << ms << "us" << std::endl;
+  std::cout << "tick to trade: " << ms << "us" << std::endl;
 }
 
 unsigned int BitmexOrderEntryGateway::cancel_all()
