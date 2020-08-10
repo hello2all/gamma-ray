@@ -66,6 +66,9 @@ namespace Models
   {
   public:
     Poco::DateTime time;
+    Timestamped();
+    Timestamped(Poco::DateTime &&time);
+    Timestamped(const Poco::DateTime &time);
   };
 
   class MarketQuote : public Timestamped
@@ -77,8 +80,8 @@ namespace Models
     double bidSize;
     std::string symbol;
 
-    MarketQuote(json &q, bool use_server_time = false);
-    MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime time);
+    MarketQuote(const json &q, bool use_server_time = false);
+    MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime &&time);
   };
 
   class Quote
@@ -123,7 +126,7 @@ namespace Models
     QuotingParameters(QuotingMode mode, double width, double size, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds);
   };
 
-  class NewOrder
+  class NewOrder : public Timestamped
   {
   public:
     std::string symbol;
@@ -133,30 +136,27 @@ namespace Models
     Side side;
     OrderType type;
     TimeInForce time_in_force;
-    Poco::DateTime time;
     bool post_only;
 
     NewOrder(const std::string &symbol, const std::string &clOrdID, double price, double orderQty, Side side, OrderType type, TimeInForce time_in_force, Poco::DateTime time, bool post_only = true);
     json to_json() const;
   };
 
-  class ReplaceOrder
+  class ReplaceOrder : public Timestamped
   {
   public:
     std::string origClOrdID;
     double price;
     double orderQty;
-    Poco::DateTime time;
 
     ReplaceOrder(const std::string &origClOrdID, double price, double orderQty, Poco::DateTime time);
     json to_json() const;
   };
 
-  class CancelOrder
+  class CancelOrder : public Timestamped
   {
   public:
     std::string clOrdID;
-    Poco::DateTime time;
 
     CancelOrder(const std::string &clOrdID, Poco::DateTime time);
     json to_json() const;
@@ -197,11 +197,10 @@ namespace Models
   //   Poco::DateTime timestamp;
   // };
 
-  class Trade
+  class Trade : public Timestamped
   {
   public:
     std::string ID;
-    Poco::DateTime time;
     Side side;
     double size;
     double price;
@@ -209,16 +208,15 @@ namespace Models
     double homeNotional;
     double foreignNotional;
 
-    Trade(const std::string ID, Poco::DateTime time, Side side, double size, double price, Liquidity liquidity, double homeNotional, double foreignNotional);
+    Trade(const std::string &&ID, Poco::DateTime &&time, Side side, double size, double price, Liquidity liquidity, double homeNotional, double foreignNotional);
   };
 
-  class Skew
+  class Skew : public Timestamped
   {
   public:
     double value;
-    Poco::DateTime time;
 
-    Skew(double value, Poco::DateTime time);
+    Skew(double value, Poco::DateTime &&time);
   };
 
   // class Position

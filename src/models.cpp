@@ -10,7 +10,21 @@ namespace Models
     return dt;
   }
 
-  MarketQuote::MarketQuote(json &q, bool use_server_time)
+  Timestamped::Timestamped()
+  {
+  }
+
+  Timestamped::Timestamped(Poco::DateTime &&time)
+      : time(std::move(time))
+  {
+  }
+
+  Timestamped::Timestamped(const Poco::DateTime &time)
+      : time(time)
+  {
+  }
+
+  MarketQuote::MarketQuote(const json &q, bool use_server_time)
   {
     this->askPrice = q["askPrice"].get<double>();
     this->askSize = q["askSize"].get<double>();
@@ -23,10 +37,9 @@ namespace Models
       this->time = Poco::DateTime();
   }
 
-  MarketQuote::MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime time)
-      : askPrice(askPrice), askSize(askSize), bidPrice(bidPrice), bidSize(bidSize), symbol(symbol)
+  MarketQuote::MarketQuote(double askPrice, double askSize, double bidPrice, double bidSize, const std::string &symbol, Poco::DateTime &&time)
+      : Timestamped{std::move(time)}, askPrice(askPrice), askSize(askSize), bidPrice(bidPrice), bidSize(bidSize), symbol(symbol)
   {
-    this->time = time;
   }
 
   Quote::Quote(double price, double size, Side side)
@@ -35,15 +48,13 @@ namespace Models
   }
 
   TwoSidedQuote::TwoSidedQuote(Quote bid, Quote ask, Poco::DateTime time)
-      : bid(bid), ask(ask)
+      : Timestamped{std::move(time)}, bid(bid), ask(ask)
   {
-    this->time = time;
   }
 
   FairValue::FairValue(double price, Poco::DateTime time)
-      : price(price)
+      : Timestamped{std::move(time)}, price(price)
   {
-    this->time = time;
   }
 
   QuotingParameters::QuotingParameters(QuotingMode mode, double width, double size, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds)
@@ -52,7 +63,7 @@ namespace Models
   }
 
   NewOrder::NewOrder(const std::string &symbol, const std::string &clOrdID, double price, double orderQty, Side side, OrderType type, TimeInForce time_in_force, Poco::DateTime time, bool post_only)
-      : symbol(symbol), clOrdID(clOrdID), price(price), orderQty(orderQty), side(side), type(type), time_in_force(time_in_force), time(time), post_only(post_only)
+      : Timestamped{std::move(time)}, symbol(symbol), clOrdID(clOrdID), price(price), orderQty(orderQty), side(side), type(type), time_in_force(time_in_force), post_only(post_only)
   {
   }
 
@@ -108,7 +119,7 @@ namespace Models
   }
 
   ReplaceOrder::ReplaceOrder(const std::string &origClOrdID, double price, double orderQty, Poco::DateTime time)
-      : origClOrdID(origClOrdID), price(price), orderQty(orderQty), time(time)
+      : Timestamped{std::move(time)}, origClOrdID(origClOrdID), price(price), orderQty(orderQty)
   {
   }
 
@@ -123,7 +134,7 @@ namespace Models
   }
 
   CancelOrder::CancelOrder(const std::string &clOrdID, Poco::DateTime time)
-      : clOrdID(clOrdID), time(time)
+      : Timestamped{std::move(time)}, clOrdID(clOrdID)
   {
   }
 
@@ -135,13 +146,13 @@ namespace Models
     return j;
   }
 
-  Trade::Trade(const std::string ID, Poco::DateTime time, Side side, double size, double price, Liquidity liquidity, double homeNotional, double foreignNotional)
-      : ID(ID), time(time), side(side), size(size), price(price), liquidity(liquidity), homeNotional(homeNotional), foreignNotional(foreignNotional)
+  Trade::Trade(const std::string &&ID, Poco::DateTime &&time, Side side, double size, double price, Liquidity liquidity, double homeNotional, double foreignNotional)
+      : Timestamped{std::move(time)}, ID(std::move(ID)), side(side), size(size), price(price), liquidity(liquidity), homeNotional(homeNotional), foreignNotional(foreignNotional)
   {
   }
 
-  Skew::Skew(double value, Poco::DateTime time)
-      : value(value), time(time)
+  Skew::Skew(double value, Poco::DateTime &&time)
+      : Timestamped{std::move(time)}, value(value)
   {
   }
 
