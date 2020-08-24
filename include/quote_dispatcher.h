@@ -18,10 +18,16 @@ private:
   Interfaces::IPositionGateway &pg;
   Interfaces::IRateLimitMonitor &rl;
   Interfaces::IExchangeDetailsGateway &details;
+  std::vector<Models::Quote> bids;
+  std::vector<Models::Quote> asks;
+  std::vector<Models::NewOrder> to_create;
+  std::vector<Models::ReplaceOrder> to_amend;
+  std::vector<Models::CancelOrder> to_cancel;
 
   bool has_enough_margin(double bid_price, double bid_size, double ask_price, double ask_size);
   void on_new_quote(const void *, Models::TwoSidedQuote &two_sided_quote);
-  void converge_orders(std::vector<Models::Quote> bids, std::vector<Models::Quote> asks, Poco::DateTime time);
+  void on_order_update(const void *, long &n_orders);
+  void converge_orders(std::vector<Models::Quote> &bids, std::vector<Models::Quote> &asks, Poco::DateTime time);
 
 public:
   QuoteDispatcher(BitmexStore &store, QuotingEngine &engine, Interfaces::IOrderEntryGateway &oe, Interfaces::IPositionGateway &pg, Interfaces::IRateLimitMonitor &rl, Interfaces::IExchangeDetailsGateway &details);

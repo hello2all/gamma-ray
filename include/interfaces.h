@@ -35,13 +35,14 @@ namespace Interfaces
   public:
     virtual std::string generate_client_id() = 0;
 
-    virtual void batch_send_order(std::vector<Models::NewOrder> orders) = 0;
-    virtual void batch_cancel_order(std::vector<Models::CancelOrder> cancels) = 0;
-    virtual void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) = 0;
+    virtual void batch_send_order(std::vector<Models::NewOrder> &orders) = 0;
+    virtual void batch_cancel_order(std::vector<Models::CancelOrder> &cancels) = 0;
+    virtual void batch_replace_order(std::vector<Models::ReplaceOrder> &replaces) = 0;
     virtual unsigned int cancel_all() = 0;
     virtual std::optional<json> open_orders() = 0;
 
     Poco::BasicEvent<Models::Trade> trade;
+    Poco::BasicEvent<long> n_orders;
   };
 
   class IPositionGateway

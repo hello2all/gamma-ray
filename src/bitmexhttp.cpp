@@ -23,7 +23,7 @@ http_request BitmexHttp::build_request(const std::string &path, const std::strin
 {
   std::string expires = std::to_string(util::get_seconds_timestamp(util::current_time()).count() + 60);
   std::string data = verb + path + expires + body;
-  std::string sign = util::encoding::hmac(std::string(api_secret), data);
+  std::string sign = util::encoding::hmac(api_secret, data);
 
   http_request req(this->method_map.at(verb));
 

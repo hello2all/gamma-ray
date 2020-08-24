@@ -34,7 +34,7 @@ private:
   void on_trade(const void *, Models::Trade &);
   // bool validate_quotes(Models::TwoSidedQuote &two_sided_quote);
   bool quotes_are_same(Models::TwoSidedQuote &two_sided_quote);
-  void set_latest(Models::TwoSidedQuote &two_sided_quote);
+  void set_latest(Models::TwoSidedQuote &&two_sided_quote);
   void delete_quotes();
 
 public:

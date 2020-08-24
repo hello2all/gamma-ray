@@ -32,7 +32,7 @@ void QuotingEngine::on_filtered_quote(const void *, Models::MarketQuote &filtere
 
   auto two_sided_quote = this->calc_quote(filtered_quote, fair_value, params, skew.value(), this->min_tick_increment, this->min_size_increment, filtered_quote.time);
   // bool valid = this->validate_quotes(two_sided_quote);
-  this->set_latest(two_sided_quote);
+  this->set_latest(std::move(two_sided_quote));
 }
 
 // void QuotingEngine::on_fair_value(const void *, Models::FairValue &fair_value)
@@ -51,7 +51,7 @@ void QuotingEngine::on_quoting_parameters(const void *, Models::QuotingParameter
   }
   auto two_sided_quote = this->calc_quote(filtered_quote, fair_value, quoting_parameters, skew.value(), this->min_tick_increment, this->min_size_increment, Poco::DateTime());
   // bool valid = this->validate_quotes(two_sided_quote);
-  this->set_latest(two_sided_quote);
+  this->set_latest(std::move(two_sided_quote));
 }
 
 void QuotingEngine::on_trade(const void *, Models::Trade &)
@@ -67,7 +67,7 @@ void QuotingEngine::on_trade(const void *, Models::Trade &)
   }
   auto two_sided_quote = this->calc_quote(filtered_quote, fair_value, params, skew.value(), this->min_tick_increment, this->min_size_increment, Poco::DateTime());
   // bool valid = this->validate_quotes(two_sided_quote);
-  this->set_latest(two_sided_quote);
+  this->set_latest(std::move(two_sided_quote));
 }
 
 std::optional<Models::TwoSidedQuote> QuotingEngine::get_latest()
@@ -75,7 +75,7 @@ std::optional<Models::TwoSidedQuote> QuotingEngine::get_latest()
   return this->latest;
 }
 
-void QuotingEngine::set_latest(Models::TwoSidedQuote &two_sided_quote)
+void QuotingEngine::set_latest(Models::TwoSidedQuote &&two_sided_quote)
 {
   if (this->quotes_are_same(two_sided_quote))
   {
@@ -83,7 +83,7 @@ void QuotingEngine::set_latest(Models::TwoSidedQuote &two_sided_quote)
   }
   else
   {
-    this->latest = std::forward<Models::TwoSidedQuote>(two_sided_quote);
+    this->latest = std::move(two_sided_quote);
     this->new_quote(this, this->latest.value());
   }
 }

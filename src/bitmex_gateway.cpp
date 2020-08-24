@@ -63,7 +63,7 @@ std::string BitmexOrderEntryGateway::generate_client_id()
   return id_generator.createRandom().toString();
 }
 
-void BitmexOrderEntryGateway::batch_send_order(std::vector<Models::NewOrder> orders)
+void BitmexOrderEntryGateway::batch_send_order(std::vector<Models::NewOrder> &orders)
 {
   const std::string path = "/api/v1/order/bulk";
   const std::string verb = "POST";
@@ -90,7 +90,7 @@ void BitmexOrderEntryGateway::batch_send_order(std::vector<Models::NewOrder> ord
   std::cout << "tick to trade: " << ms << "us" << std::endl;
 }
 
-void BitmexOrderEntryGateway::batch_cancel_order(std::vector<Models::CancelOrder> cancels)
+void BitmexOrderEntryGateway::batch_cancel_order(std::vector<Models::CancelOrder> &cancels)
 {
   const std::string path = "/api/v1/order";
   const std::string verb = "DELETE";
@@ -113,7 +113,7 @@ void BitmexOrderEntryGateway::batch_cancel_order(std::vector<Models::CancelOrder
   });
 }
 
-void BitmexOrderEntryGateway::batch_replace_order(std::vector<Models::ReplaceOrder> replaces)
+void BitmexOrderEntryGateway::batch_replace_order(std::vector<Models::ReplaceOrder> &replaces)
 {
   const std::string path = "/api/v1/order/bulk";
   const std::string verb = "PUT";
@@ -167,6 +167,8 @@ void BitmexOrderEntryGateway::on_order(const void *, json &order)
   json opens = json::array();
   std::copy_if(begin, end, std::back_inserter(opens), [](json o) { return o["leavesQty"].get<long>() > 0; });
   opens.swap(this->store.data["order"][this->symbol.symbol]);
+  long number_of_orders = this->store.data["order"][this->symbol.symbol].size();
+  this->n_orders(this, number_of_orders);
 }
 
 Models::Side BitmexOrderEntryGateway::decode_side(const std::string &s)

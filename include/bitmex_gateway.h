@@ -65,13 +65,11 @@ public:
 
   std::string generate_client_id() override;
 
-  void batch_send_order(std::vector<Models::NewOrder> orders) override;
-  void batch_cancel_order(std::vector<Models::CancelOrder> cancels) override;
-  void batch_replace_order(std::vector<Models::ReplaceOrder> replaces) override;
+  void batch_send_order(std::vector<Models::NewOrder> &orders) override;
+  void batch_cancel_order(std::vector<Models::CancelOrder> &cancels) override;
+  void batch_replace_order(std::vector<Models::ReplaceOrder> &replaces) override;
   unsigned int cancel_all() override;
   std::optional<json> open_orders() override;
-
-  Poco::BasicEvent<Models::Trade> trade;
 };
 
 class BitmexPositionGateway : public Interfaces::IPositionGateway
