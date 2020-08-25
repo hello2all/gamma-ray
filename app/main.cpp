@@ -36,6 +36,7 @@ int main()
   std::string http_uri = config["httpUrl"].get<std::string>();
   std::string api_key = config["apiKey"].get<std::string>();
   std::string api_secret = config["apiSecret"].get<std::string>();
+  std::string contract = config["contract"].get<std::string>();
   Models::QuotingMode mode = Models::get_quoting_mode(config["quotingParam"]["quotingMode"].get<std::string>());
   double spread = config["quotingParam"]["spread"].get<double>();
   double size = config["quotingParam"]["size"].get<double>();
@@ -47,11 +48,11 @@ int main()
   Models::QuotingParameters params(mode, spread, size, tbp, offset, sk, tpm, trs);
 
   BitmexRateLimit rl;
-  BitmexDetailsGateway details;
+  BitmexDetailsGateway details(contract);
   BitmexWebsocket ws_cli(ws_uri, api_key, api_secret);
   BitmexHttp http_cli(http_uri, api_key, api_secret, rl);
 
-  BitmexSymbolProdiver symbol;
+  BitmexSymbolProvider symbol(contract);
   BitmexStore store;
   BitmexDeltaParser parser;
   BitmexMarketDataGateway md(ws_cli, symbol);

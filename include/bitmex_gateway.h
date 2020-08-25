@@ -12,27 +12,30 @@
 #include "Poco/Timespan.h"
 #include "delta_parser.h"
 
-class BitmexSymbolProdiver
+class BitmexSymbolProvider
 {
 public:
-  const std::string base = "XBt";
-  const std::string quote = "USD";
-  const std::string underlying = "XBt";
-  const std::string symbol = "XBTUSD";
-  const std::string symbol_with_type = "XBTUSD:Perpetual";
+  std::string base = "XBt";
+  std::string quote = "USD";
+  std::string underlying = "XBt";
+  std::string symbol = "XBTUSD";
+  std::string symbol_with_type = "XBTUSD:Perpetual";
+
+  BitmexSymbolProvider() = default;
+  BitmexSymbolProvider(const std::string &c);
 };
 
 class BitmexMarketDataGateway : public Interfaces::IMarketDataGateway
 {
 private:
   BitmexWebsocket &ws;
-  BitmexSymbolProdiver &symbol;
+  BitmexSymbolProvider &symbol;
   std::string order_book_channel = "orderBook10:XBTUSD";
   const std::string order_book_handle = "orderBook10";
   void subscribe_to_quote(const void *, Models::ConnectivityStatus &cs);
 
 public:
-  BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymbolProdiver &symbol);
+  BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymbolProvider &symbol);
   ~BitmexMarketDataGateway();
 };
 
@@ -43,7 +46,7 @@ private:
   BitmexWebsocket &ws;
   BitmexDeltaParser &parser;
   BitmexStore &store;
-  BitmexSymbolProdiver &symbol;
+  BitmexSymbolProvider &symbol;
   std::string execution_channel = "execution:XBTUSD";
   const std::string execution_handle = "execution";
   std::string order_channel = "order:XBTUSD";
@@ -60,7 +63,7 @@ private:
   void on_execution(const void *, json &execution) override;
 
 public:
-  BitmexOrderEntryGateway(BitmexHttp &http, BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol);
+  BitmexOrderEntryGateway(BitmexHttp &http, BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProvider &symbol);
   ~BitmexOrderEntryGateway();
 
   std::string generate_client_id() override;
@@ -78,7 +81,7 @@ private:
   BitmexWebsocket &ws;
   BitmexDeltaParser &parser;
   BitmexStore &store;
-  BitmexSymbolProdiver &symbol;
+  BitmexSymbolProvider &symbol;
   std::string position_channel = "position:XBTUSD";
   const std::string position_handle = "position";
   const std::string margin_channel = "margin";
@@ -89,7 +92,7 @@ private:
   void on_margin(const void *, json &margin) override;
 
 public:
-  BitmexPositionGateway(BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol);
+  BitmexPositionGateway(BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProvider &symbol);
   ~BitmexPositionGateway();
 
   std::optional<json> get_latest_position() override;
@@ -117,14 +120,13 @@ class BitmexDetailsGateway : public Interfaces::IExchangeDetailsGateway
 {
 public:
   BitmexDetailsGateway();
-  ~BitmexDetailsGateway();
+  BitmexDetailsGateway(const std::string &c);
 };
 
 class BitmexCombinedGateway
 {
 public:
   BitmexCombinedGateway(BitmexDetailsGateway &base, BitmexMarketDataGateway &md, BitmexOrderEntryGateway &oe, BitmexPositionGateway &pg, BitmexRateLimit &rl);
-  ~BitmexCombinedGateway();
 
   BitmexDetailsGateway &base;
   BitmexMarketDataGateway &md;

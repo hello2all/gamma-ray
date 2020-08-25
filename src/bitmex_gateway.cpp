@@ -1,6 +1,30 @@
 #include "bitmex_gateway.h"
 
-BitmexMarketDataGateway::BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymbolProdiver &symbol)
+BitmexSymbolProvider::BitmexSymbolProvider(const std::string &c)
+{
+  if (c == "XBTUSD")
+  {
+    this->base = "XBt";
+    this->quote = "USD";
+    this->underlying = "XBt";
+    this->symbol = "XBTUSD";
+    this->symbol_with_type = "XBTUSD:Perpetual";
+  }
+  else if (c == "ETHUSD")
+  {
+    this->base = "ETH";
+    this->quote = "USD";
+    this->underlying = "XBt";
+    this->symbol = "ETHUSD";
+    this->symbol_with_type = "ETHUSD:Perpetual";
+  }
+  else
+  {
+    throw std::runtime_error("Invalid contract symbol");
+  }
+}
+
+BitmexMarketDataGateway::BitmexMarketDataGateway(BitmexWebsocket &ws, BitmexSymbolProvider &symbol)
     : ws(ws), symbol(symbol)
 {
   this->order_book_channel = "orderBook10:" + symbol.symbol;
@@ -30,7 +54,7 @@ void BitmexMarketDataGateway::subscribe_to_quote(const void *, Models::Connectiv
   }
 }
 
-BitmexOrderEntryGateway::BitmexOrderEntryGateway(BitmexHttp &http, BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol)
+BitmexOrderEntryGateway::BitmexOrderEntryGateway(BitmexHttp &http, BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProvider &symbol)
     : http(http), ws(ws), parser(parser), store(store), symbol(symbol)
 {
   this->order_channel = "order:" + symbol.symbol;
@@ -230,7 +254,7 @@ std::optional<json> BitmexOrderEntryGateway::open_orders()
   }
 }
 
-BitmexPositionGateway::BitmexPositionGateway(BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProdiver &symbol)
+BitmexPositionGateway::BitmexPositionGateway(BitmexWebsocket &ws, BitmexDeltaParser &parser, BitmexStore &store, BitmexSymbolProvider &symbol)
     : ws(ws), parser(parser), store(store), symbol(symbol)
 {
   this->position_channel = "position:" + symbol.symbol;
@@ -338,15 +362,27 @@ BitmexDetailsGateway::BitmexDetailsGateway()
   this->max_leverage = 100;
 }
 
-BitmexDetailsGateway::~BitmexDetailsGateway()
+BitmexDetailsGateway::BitmexDetailsGateway(const std::string &c)
 {
+  if (c == "XBTUSD")
+  {
+    this->pair = c;
+    this->min_tick_increment = 0.5;
+  }
+  else
+  {
+    this->pair = c;
+    this->min_tick_increment = 0.05;
+  }
+
+  this->maker_fee = -0.00025;
+  this->taker_fee = 0.00075;
+  this->min_size_increment = 1;
+  this->face_value = 1.0;
+  this->max_leverage = 100;
 }
 
 BitmexCombinedGateway::BitmexCombinedGateway(BitmexDetailsGateway &base, BitmexMarketDataGateway &md, BitmexOrderEntryGateway &oe, BitmexPositionGateway &pg, BitmexRateLimit &rl)
     : base(base), md(md), oe(oe), pg(pg), rl(rl)
-{
-}
-
-BitmexCombinedGateway::~BitmexCombinedGateway()
 {
 }

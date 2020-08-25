@@ -21,7 +21,7 @@ class MarketDataListener
 private:
   BitmexMarketDataGateway &md;
   BitmexWebsocket &ws;
-  BitmexSymbolProdiver &symbol;
+  BitmexSymbolProvider &symbol;
   void on_market_quote(const void *, Models::MarketQuote &quote)
   {
     // LOG(quote.symbol);
@@ -30,7 +30,7 @@ private:
   }
 
 public:
-  MarketDataListener(BitmexMarketDataGateway &md, BitmexWebsocket &ws, BitmexSymbolProdiver &symbol)
+  MarketDataListener(BitmexMarketDataGateway &md, BitmexWebsocket &ws, BitmexSymbolProvider &symbol)
       : md(md), ws(ws), symbol(symbol)
   {
     md.market_quote += Poco::delegate(this, &MarketDataListener::on_market_quote);
@@ -74,7 +74,7 @@ TEST_CASE("Bitmex market data gateway")
   string api_secret = "VJN9dBwrBInY2dY-SMVzDkb1suv9DQRwxmYKiEh7TcJVTg0w";
 
   BitmexWebsocket ws_client(uri, api_key, api_secret);
-  BitmexSymbolProdiver symbol;
+  BitmexSymbolProvider symbol;
   BitmexMarketDataGateway md(ws_client, symbol);
   MarketDataListener MDL(md, ws_client, symbol);
 
@@ -90,7 +90,7 @@ TEST_CASE("Bitmex order entry gateway")
 
   BitmexWebsocket ws_cli(ws_uri, api_key, api_secret);
   BitmexHttp http_cli(http_uri, api_key, api_secret);
-  BitmexSymbolProdiver symbol;
+  BitmexSymbolProvider symbol;
   BitmexStore store;
   BitmexDeltaParser parser;
   BitmexOrderEntryGateway oe(http_cli, ws_cli, parser, store, symbol);
@@ -167,7 +167,7 @@ TEST_CASE("Bitmex position gateway")
 
   BitmexWebsocket ws_cli(ws_uri, api_key, api_secret);
   BitmexHttp http_cli(http_uri, api_key, api_secret);
-  BitmexSymbolProdiver symbol;
+  BitmexSymbolProvider symbol;
   BitmexStore store;
   BitmexDeltaParser parser;
 
