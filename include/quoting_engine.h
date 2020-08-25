@@ -23,6 +23,8 @@ private:
   Skew &skew;
   Interfaces::IOrderEntryGateway &oe;
   Interfaces::IExchangeDetailsGateway &details;
+  std::vector<Models::Quote> bids_cache;
+  std::vector<Models::Quote> asks_cache;
   double min_tick_increment;
   double min_size_increment;
 

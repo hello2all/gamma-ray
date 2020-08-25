@@ -60,8 +60,8 @@ namespace Models
   {
   }
 
-  TwoSidedQuote::TwoSidedQuote(Quote bid, Quote ask, Poco::DateTime time)
-      : Timestamped{std::move(time)}, bid(bid), ask(ask)
+  TwoSidedQuote::TwoSidedQuote(std::vector<Quote> bids, std::vector<Quote> asks, Poco::DateTime time)
+      : Timestamped{std::move(time)}, bids(bids), asks(asks)
   {
   }
 
@@ -70,8 +70,8 @@ namespace Models
   {
   }
 
-  QuotingParameters::QuotingParameters(QuotingMode mode, double width, double size, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds)
-      : mode(mode), width(width), size(size), target_base_position(target_base_position), position_divergence(position_divergence), skew_factor(skew_factor), trades_per_minute(trades_per_minute), trade_rate_seconds(trade_rate_seconds)
+  QuotingParameters::QuotingParameters(QuotingMode mode, double width, double size, unsigned int pairs, double price_interval, double size_increment, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds)
+      : mode(mode), width(width), size(size), pairs(pairs), price_interval(price_interval), size_increment(size_increment), target_base_position(target_base_position), position_divergence(position_divergence), skew_factor(skew_factor), trades_per_minute(trades_per_minute), trade_rate_seconds(trade_rate_seconds)
   {
   }
 

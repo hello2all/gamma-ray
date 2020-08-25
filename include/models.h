@@ -102,10 +102,10 @@ namespace Models
   class TwoSidedQuote : public Timestamped
   {
   public:
-    Quote bid;
-    Quote ask;
+    std::vector<Quote> bids;
+    std::vector<Quote> asks;
 
-    TwoSidedQuote(Quote bid, Quote ask, Poco::DateTime time);
+    TwoSidedQuote(std::vector<Quote> bids, std::vector<Quote> asks, Poco::DateTime time);
   };
 
   class FairValue : public Timestamped
@@ -122,13 +122,16 @@ namespace Models
     QuotingMode mode;
     double width;
     double size;
+    unsigned int pairs;
+    double price_interval;
+    double size_increment;
     double target_base_position;
     double position_divergence;
     double skew_factor;
     double trades_per_minute;
     double trade_rate_seconds;
 
-    QuotingParameters(QuotingMode mode, double width, double size, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds);
+    QuotingParameters(QuotingMode mode, double width, double size, unsigned int pairs, double price_interval, double size_increment, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds);
   };
 
   class NewOrder : public Timestamped

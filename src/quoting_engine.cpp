@@ -5,6 +5,8 @@ QuotingEngine::QuotingEngine(QuotingStrategies::QuotingStyleRegistry &registry, 
 {
   this->min_tick_increment = details.min_tick_increment;
   this->min_size_increment = details.min_size_increment;
+  this->bids_cache.reserve(qp.get_latest().pairs * 2);
+  this->asks_cache.reserve(qp.get_latest().pairs * 2);
   mf.filtered_quote += Poco::delegate(this, &QuotingEngine::on_filtered_quote);
   // fv.fair_value_changed += Poco::delegate(this, &QuotingEngine::on_fair_value);
   qp.parameters_changed += Poco::delegate(this, &QuotingEngine::on_quoting_parameters);
@@ -104,9 +106,17 @@ Models::TwoSidedQuote QuotingEngine::calc_quote(Models::MarketQuote &filtered_qu
   unrounded.askSize = std::max(unrounded.askSize, min_size_increment);
 
   // create two sided quote
-  Models::Quote bid(unrounded.bidPrice, unrounded.bidSize, Models::Side::Bid);
-  Models::Quote ask(unrounded.askPrice, unrounded.askSize, Models::Side::Ask);
-  return Models::TwoSidedQuote(std::move(bid), std::move(ask), time);
+  this->bids_cache.clear();
+  this->asks_cache.clear();
+  for (unsigned int i = 0; i < quoting_parameters.pairs; i++)
+  {
+    Models::Quote bid(unrounded.bidPrice - quoting_parameters.price_interval * i, unrounded.bidSize + quoting_parameters.size_increment * i, Models::Side::Bid);
+    Models::Quote ask(unrounded.askPrice + quoting_parameters.price_interval * i, unrounded.askSize + quoting_parameters.size_increment * i, Models::Side::Ask);
+    this->bids_cache.emplace_back(bid);
+    this->asks_cache.emplace_back(ask);
+  }
+
+  return Models::TwoSidedQuote(this->bids_cache, this->asks_cache, time);
 }
 
 // bool QuotingEngine::validate_quotes(Models::TwoSidedQuote &two_sided_quote)
@@ -120,16 +130,17 @@ bool QuotingEngine::quotes_are_same(Models::TwoSidedQuote &two_sided_quote)
     return false;
 
   auto latest_quotes = this->latest.value();
+
   // abs price diff less than min tick
-  if (std::abs(two_sided_quote.ask.price - latest_quotes.ask.price) >= this->min_tick_increment)
+  if (std::abs(two_sided_quote.bids[0].price - latest_quotes.bids[0].price) >= this->min_tick_increment)
     return false;
-  if (std::abs(two_sided_quote.bid.price - latest_quotes.bid.price) >= this->min_tick_increment)
+  if (std::abs(two_sided_quote.asks[0].price - latest_quotes.asks[0].price) >= this->min_tick_increment)
     return false;
-  // abs size diff less tahn min size
-  if (std::abs(two_sided_quote.ask.size - latest_quotes.ask.size) >= this->min_size_increment)
-    return false;
-  if (std::abs(two_sided_quote.bid.size - latest_quotes.bid.size) >= this->min_size_increment)
-    return false;
+  // // abs size diff less than min size
+  // if (std::abs(two_sided_quote.bids[0].size - latest_quotes.bids[0].size) >= this->min_size_increment)
+  //   return false;
+  // if (std::abs(two_sided_quote.asks[0].size - latest_quotes.asks[0].size) >= this->min_size_increment)
+  //   return false;
 
   return true;
 }

@@ -18,8 +18,7 @@ private:
   Interfaces::IPositionGateway &pg;
   Interfaces::IRateLimitMonitor &rl;
   Interfaces::IExchangeDetailsGateway &details;
-  std::vector<Models::Quote> bids;
-  std::vector<Models::Quote> asks;
+  unsigned int pairs;
   std::vector<Models::NewOrder> to_create;
   std::vector<Models::ReplaceOrder> to_amend;
   std::vector<Models::CancelOrder> to_cancel;
@@ -30,6 +29,6 @@ private:
   void converge_orders(std::vector<Models::Quote> &bids, std::vector<Models::Quote> &asks, Poco::DateTime time);
 
 public:
-  QuoteDispatcher(BitmexStore &store, QuotingEngine &engine, Interfaces::IOrderEntryGateway &oe, Interfaces::IPositionGateway &pg, Interfaces::IRateLimitMonitor &rl, Interfaces::IExchangeDetailsGateway &details);
+  QuoteDispatcher(BitmexStore &store, QuotingEngine &engine, Interfaces::IOrderEntryGateway &oe, Interfaces::IPositionGateway &pg, Interfaces::IRateLimitMonitor &rl, Interfaces::IExchangeDetailsGateway &details, unsigned int pairs);
   ~QuoteDispatcher();
 };

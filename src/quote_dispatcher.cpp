@@ -1,10 +1,8 @@
 #include "quote_dispatcher.h"
 
-QuoteDispatcher::QuoteDispatcher(BitmexStore &store, QuotingEngine &engine, Interfaces::IOrderEntryGateway &oe, Interfaces::IPositionGateway &pg, Interfaces::IRateLimitMonitor &rl, Interfaces::IExchangeDetailsGateway &details)
-    : store(store), engine(engine), oe(oe), pg(pg), rl(rl), details(details)
+QuoteDispatcher::QuoteDispatcher(BitmexStore &store, QuotingEngine &engine, Interfaces::IOrderEntryGateway &oe, Interfaces::IPositionGateway &pg, Interfaces::IRateLimitMonitor &rl, Interfaces::IExchangeDetailsGateway &details, unsigned int pairs)
+    : store(store), engine(engine), oe(oe), pg(pg), rl(rl), details(details), pairs(pairs)
 {
-  this->bids.reserve(5);
-  this->asks.reserve(5);
   this->to_amend.reserve(10);
   this->to_create.reserve(10);
   this->to_cancel.reserve(10);
@@ -71,20 +69,15 @@ void QuoteDispatcher::on_new_quote(const void *, Models::TwoSidedQuote &two_side
   }
 
   // todo: target position
-
-  this->bids.clear();
-  this->asks.clear();
-  this->bids.push_back(two_sided_quote.bid);
-  this->asks.push_back(two_sided_quote.ask);
-
-  this->converge_orders(this->bids, this->asks, two_sided_quote.time);
+  this->converge_orders(two_sided_quote.bids, two_sided_quote.asks, two_sided_quote.time);
 }
 
 void QuoteDispatcher::on_order_update(const void *, long &n_orders)
 {
-  if (n_orders == 2)
+  if (n_orders == 2 * this->pairs)
     return;
-  if (!this->engine.get_latest())
+  auto two_sided_quote = this->engine.get_latest();
+  if (!two_sided_quote)
     return;
 
   // bool enough = this->has_enough_margin(two_sided_quote.bid.price, two_sided_quote.bid.size, two_sided_quote.ask.price, two_sided_quote.ask.size);
@@ -111,7 +104,7 @@ void QuoteDispatcher::on_order_update(const void *, long &n_orders)
 
   // todo: target position
 
-  this->converge_orders(this->bids, this->asks, Poco::DateTime());
+  this->converge_orders(two_sided_quote->bids, two_sided_quote->asks, Poco::DateTime());
 }
 
 void QuoteDispatcher::converge_orders(std::vector<Models::Quote> &bids, std::vector<Models::Quote> &asks, Poco::DateTime time)

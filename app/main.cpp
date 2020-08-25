@@ -40,12 +40,15 @@ int main()
   Models::QuotingMode mode = Models::get_quoting_mode(config["quotingParam"]["quotingMode"].get<std::string>());
   double spread = config["quotingParam"]["spread"].get<double>();
   double size = config["quotingParam"]["size"].get<double>();
+  double pairs = config["quotingParam"]["pairs"].get<unsigned int>();
+  double interval = config["quotingParam"]["priceInterval"].get<double>();
+  double size_inc = config["quotingParam"]["sizeIncrement"].get<double>();
   double tbp = config["quotingParam"]["targetBasePosition"].get<double>();
   double offset = config["quotingParam"]["positionOffset"].get<double>();
   double sk = config["quotingParam"]["skewFactor"].get<double>();
   double tpm = config["quotingParam"]["tradesPerMinute"].get<double>();
   double trs = config["quotingParam"]["tradeRateSeconds"].get<double>();
-  Models::QuotingParameters params(mode, spread, size, tbp, offset, sk, tpm, trs);
+  Models::QuotingParameters params(mode, spread, size, pairs, interval, size_inc, tbp, offset, sk, tpm, trs);
 
   BitmexRateLimit rl;
   BitmexDetailsGateway details(contract);
@@ -64,6 +67,6 @@ int main()
   QuotingParameters qp(params);
   Skew skew(qp, pg, details);
   QuotingEngine engine(quoting_style_registry, fv, qp, mf, skew, oe, details);
-  QuoteDispatcher dispatcher(store, engine, oe, pg, rl, details);
+  QuoteDispatcher dispatcher(store, engine, oe, pg, rl, details, params.pairs);
   ws_cli.connect();
 }
