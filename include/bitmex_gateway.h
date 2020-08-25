@@ -103,7 +103,7 @@ class BitmexRateLimit : public Interfaces::IRateLimitMonitor
 {
 private:
   bool is_limited = false;
-  const float threshold = 0.2;
+  const float threshold = 0.05;
   int limit = 60;
   Poco::DateTime next_reset;
 
