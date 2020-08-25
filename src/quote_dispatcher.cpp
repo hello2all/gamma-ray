@@ -64,6 +64,7 @@ void QuoteDispatcher::on_new_quote(const void *, Models::TwoSidedQuote &two_side
     if (open_orders && (open_orders.value().size() > 0))
     {
       this->oe.cancel_all();
+      std::cout << "Rate limit reached, all orders canceled" << std::endl;
     }
     return;
   }
@@ -98,6 +99,7 @@ void QuoteDispatcher::on_order_update(const void *, long &n_orders)
     if (open_orders && (open_orders.value().size() > 0))
     {
       this->oe.cancel_all();
+      std::cout << "Rate limit reached, all orders canceled" << std::endl;
     }
     return;
   }
