@@ -10,6 +10,19 @@ namespace Models
     return dt;
   }
 
+  QuotingMode get_quoting_mode(const std::string &s)
+  {
+    auto it = quoting_mode_table.find(s);
+    if (it != quoting_mode_table.end())
+    {
+      return it->second;
+    }
+    else
+    {
+      throw std::runtime_error("Invalid quoting mode");
+    }
+  }
+
   Timestamped::Timestamped()
   {
   }

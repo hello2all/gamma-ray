@@ -58,8 +58,13 @@ namespace Models
     USD
   };
 
+  // === Mapping ===
+  static std::unordered_map<std::string, QuotingMode> const quoting_mode_table = {
+      {"Top", QuotingMode::Top}};
+
   // === FUNCTIONS ===
   Poco::DateTime iso8601_to_datetime(const std::string &s);
+  QuotingMode get_quoting_mode(const std::string &s);
 
   // === CLASSES ===
   class Timestamped

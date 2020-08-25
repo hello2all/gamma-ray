@@ -1,6 +1,3 @@
-// Executables must have the following defined if the library contains
-// doctest definitions. For builds with this disabled, e.g. code shipped to
-// users, this can be left out.
 #ifdef ENABLE_DOCTEST_IN_LIBRARY
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
@@ -21,18 +18,33 @@
 #include "quoting_strategies.h"
 #include "skew.h"
 
+using json = nlohmann::json;
+
 int main()
 {
-  std::string ws_uri = "wss://testnet.bitmex.com/realtime";
-  std::string http_uri = "https://testnet.bitmex.com";
-  std::string api_key = "iCDc_MrgK2bfZOaRKhz5K99A";
-  std::string api_secret = "VJN9dBwrBInY2dY-SMVzDkb1suv9DQRwxmYKiEh7TcJVTg0w";
-  Models::QuotingParameters params(Models::QuotingMode::Top, 0.5, 25.0, 0, 100.0, 1.0, 5.0, 300.0);
-
+  // init quoting styles
   QuotingStrategies::Top top;
   std::vector<QuotingStrategies::QuotingStyle *> quoting_styles;
   quoting_styles.push_back(&top);
   QuotingStrategies::QuotingStyleRegistry quoting_style_registry(quoting_styles);
+
+  // init config
+  std::ifstream i("gamma-ray.json");
+  json config;
+  i >> config;
+  std::string ws_uri = config["websocketUrl"].get<std::string>();
+  std::string http_uri = config["httpUrl"].get<std::string>();
+  std::string api_key = config["apiKey"].get<std::string>();
+  std::string api_secret = config["apiSecret"].get<std::string>();
+  Models::QuotingMode mode = Models::get_quoting_mode(config["quotingParam"]["quotingMode"].get<std::string>());
+  double spread = config["quotingParam"]["spread"].get<double>();
+  double size = config["quotingParam"]["size"].get<double>();
+  double tbp = config["quotingParam"]["targetBasePosition"].get<double>();
+  double offset = config["quotingParam"]["positionOffset"].get<double>();
+  double sk = config["quotingParam"]["skewFactor"].get<double>();
+  double tpm = config["quotingParam"]["tradesPerMinute"].get<double>();
+  double trs = config["quotingParam"]["tradeRateSeconds"].get<double>();
+  Models::QuotingParameters params(mode, spread, size, tbp, offset, sk, tpm, trs);
 
   BitmexRateLimit rl;
   BitmexDetailsGateway details;
