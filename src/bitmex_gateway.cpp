@@ -18,6 +18,30 @@ BitmexSymbolProvider::BitmexSymbolProvider(const std::string &c)
     this->symbol = "ETHUSD";
     this->symbol_with_type = "ETHUSD:Perpetual";
   }
+  else if (c == "XRPUSD")
+  {
+    this->base = "XRP";
+    this->quote = "USD";
+    this->underlying = "XBt";
+    this->symbol = "XRPUSD";
+    this->symbol_with_type = "XRPUSD:Perpetual";
+  }
+  else if (c == "LTCUSD")
+  {
+    this->base = "LTC";
+    this->quote = "USD";
+    this->underlying = "XBt";
+    this->symbol = "LTCUSD";
+    this->symbol_with_type = "LTCUSD:Perpetual";
+  }
+  else if (c == "BCHUSD")
+  {
+    this->base = "BCH";
+    this->quote = "USD";
+    this->underlying = "XBt";
+    this->symbol = "BCHUSD";
+    this->symbol_with_type = "BCHUSD:Perpetual";
+  }
   else
   {
     throw std::runtime_error("Invalid contract symbol");
@@ -369,7 +393,22 @@ BitmexDetailsGateway::BitmexDetailsGateway(const std::string &c)
     this->pair = c;
     this->min_tick_increment = 0.5;
   }
-  else
+  else if (c == "ETHUSD")
+  {
+    this->pair = c;
+    this->min_tick_increment = 0.05;
+  }
+  else if (c == "XRPUSD")
+  {
+    this->pair = c;
+    this->min_tick_increment = 0.0001;
+  }
+  else if (c == "LTCUSD")
+  {
+    this->pair = c;
+    this->min_tick_increment = 0.01;
+  }
+  else if (c == "BCHUSD")
   {
     this->pair = c;
     this->min_tick_increment = 0.05;
