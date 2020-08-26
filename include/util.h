@@ -5,7 +5,7 @@
 #include <openssl/hmac.h>
 #include <sstream>
 #include <iomanip>
-#include <math.h>
+#include <cmath>
 #include "models.h"
 
 namespace util
@@ -47,7 +47,7 @@ namespace util
 
   inline double round_up(double x, double min_increment)
   {
-    double remainder = fmod(x, min_increment);
+    double remainder = std::fmod(x, min_increment);
     if (remainder == 0)
       return x;
     else
@@ -56,18 +56,18 @@ namespace util
 
   inline double round_down(double x, double min_increment)
   {
-    double remainder = fmod(x, min_increment);
+    double remainder = std::fmod(x, min_increment);
     if (remainder == 0)
       return x;
     else
-      return floor(x / min_increment) * min_increment;
+      return std::floor(x / min_increment) * min_increment;
   }
 
   inline double round_nearest(double x, double min_increment)
   {
     double up = round_up(x, min_increment);
     double down = round_down(x, min_increment);
-    return (fabs(x - down) > fabs(up - x)) ? up : down;
+    return (std::fabs(x - down) > std::fabs(up - x)) ? up : down;
   }
 
   inline double round_side(double x, double min_increment, Models::Side side)

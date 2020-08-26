@@ -124,18 +124,17 @@ bool QuotingEngine::quotes_are_same(Models::TwoSidedQuote &two_sided_quote)
 
   auto latest_quotes = this->latest.value();
 
+  double bid_delta = std::fabs(two_sided_quote.bids[0].price - latest_quotes.bids[0].price);
+  double ask_delta = std::fabs(two_sided_quote.asks[0].price - latest_quotes.asks[0].price);
   // abs price diff less than min tick
-  if (std::abs(two_sided_quote.bids[0].price - latest_quotes.bids[0].price) >= this->min_tick_increment)
+  if ((bid_delta < this->min_tick_increment) && (ask_delta < this->min_tick_increment))
+  {
+    return true;
+  }
+  else
+  {
     return false;
-  if (std::abs(two_sided_quote.asks[0].price - latest_quotes.asks[0].price) >= this->min_tick_increment)
-    return false;
-  // // abs size diff less than min size
-  // if (std::abs(two_sided_quote.bids[0].size - latest_quotes.bids[0].size) >= this->min_size_increment)
-  //   return false;
-  // if (std::abs(two_sided_quote.asks[0].size - latest_quotes.asks[0].size) >= this->min_size_increment)
-  //   return false;
-
-  return true;
+  }
 }
 
 void QuotingEngine::delete_quotes()

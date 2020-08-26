@@ -89,7 +89,6 @@ target_precompile_headers(${LIBRARY_NAME} PUBLIC
     <chrono>
     <thread>
     <algorithm>
-    <math.h>
     <cmath>
     <unistd.h>
     "${POCO_DIR}/BasicEvent.h"
