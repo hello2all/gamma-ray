@@ -58,4 +58,13 @@ namespace QuotingStrategies
 
     GeneratedQuote generate_quote(QuoteInput &input) override;
   };
+
+  class Mid : public QuotingStyle
+  {
+    public:
+    Mid();
+    ~Mid();
+
+    GeneratedQuote generate_quote(QuoteInput &input) override;
+  };
 } // namespace QuotingStrategies

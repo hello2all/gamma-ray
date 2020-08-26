@@ -23,7 +23,8 @@ namespace Models
 
   enum class QuotingMode
   {
-    Top
+    Top,
+    Mid
   };
 
   enum class Side
@@ -60,7 +61,8 @@ namespace Models
 
   // === Mapping ===
   static std::unordered_map<std::string, QuotingMode> const quoting_mode_table = {
-      {"Top", QuotingMode::Top}};
+      {"Top", QuotingMode::Top},
+      {"Mid", QuotingMode::Mid}};
 
   // === FUNCTIONS ===
   Poco::DateTime iso8601_to_datetime(const std::string &s);

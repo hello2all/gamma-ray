@@ -33,7 +33,6 @@ void QuotingEngine::on_filtered_quote(const void *, Models::MarketQuote &filtere
   }
 
   auto two_sided_quote = this->calc_quote(filtered_quote, fair_value, params, skew.value(), this->min_tick_increment, this->min_size_increment, filtered_quote.time);
-  // bool valid = this->validate_quotes(two_sided_quote);
   this->set_latest(std::move(two_sided_quote));
 }
 
@@ -52,7 +51,6 @@ void QuotingEngine::on_quoting_parameters(const void *, Models::QuotingParameter
     return;
   }
   auto two_sided_quote = this->calc_quote(filtered_quote, fair_value, quoting_parameters, skew.value(), this->min_tick_increment, this->min_size_increment, Poco::DateTime());
-  // bool valid = this->validate_quotes(two_sided_quote);
   this->set_latest(std::move(two_sided_quote));
 }
 
@@ -68,7 +66,6 @@ void QuotingEngine::on_trade(const void *, Models::Trade &)
     return;
   }
   auto two_sided_quote = this->calc_quote(filtered_quote, fair_value, params, skew.value(), this->min_tick_increment, this->min_size_increment, Poco::DateTime());
-  // bool valid = this->validate_quotes(two_sided_quote);
   this->set_latest(std::move(two_sided_quote));
 }
 
@@ -118,10 +115,6 @@ Models::TwoSidedQuote QuotingEngine::calc_quote(Models::MarketQuote &filtered_qu
 
   return Models::TwoSidedQuote(this->bids_cache, this->asks_cache, time);
 }
-
-// bool QuotingEngine::validate_quotes(Models::TwoSidedQuote &two_sided_quote)
-// {
-// }
 
 bool QuotingEngine::quotes_are_same(Models::TwoSidedQuote &two_sided_quote)
 {

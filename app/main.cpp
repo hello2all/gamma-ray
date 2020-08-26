@@ -24,8 +24,10 @@ int main()
 {
   // init quoting styles
   QuotingStrategies::Top top;
+  QuotingStrategies::Mid mid;
   std::vector<QuotingStrategies::QuotingStyle *> quoting_styles;
   quoting_styles.push_back(&top);
+  quoting_styles.push_back(&mid);
   QuotingStrategies::QuotingStyleRegistry quoting_style_registry(quoting_styles);
 
   // init config

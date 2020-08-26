@@ -57,4 +57,21 @@ namespace QuotingStrategies
 
     return GeneratedQuote(askPrice, input.qp.size, bidPrice, input.qp.size);
   }
+
+  Mid::Mid()
+  {
+    this->mode = Models::QuotingMode::Mid;
+  }
+
+  Mid::~Mid()
+  {
+  }
+
+  GeneratedQuote Mid::generate_quote(QuoteInput &input)
+  {
+    double askPrice = input.fv.price + input.qp.width / 2.0;
+    double bidPrice = input.fv.price - input.qp.width / 2.0;
+
+    return GeneratedQuote(askPrice, input.qp.size, bidPrice, input.qp.size);
+  }
 } // namespace QuotingStrategies
