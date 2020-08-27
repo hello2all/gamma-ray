@@ -75,8 +75,8 @@ namespace Models
   {
   }
 
-  NewOrder::NewOrder(const std::string &symbol, const std::string &clOrdID, double price, double orderQty, Side side, OrderType type, TimeInForce time_in_force, Poco::DateTime time, bool post_only)
-      : Timestamped{std::move(time)}, symbol(symbol), clOrdID(clOrdID), price(price), orderQty(orderQty), side(side), type(type), time_in_force(time_in_force), post_only(post_only)
+  NewOrder::NewOrder(const std::string &symbol, std::string &&clOrdID, double price, double orderQty, Side side, OrderType type, TimeInForce time_in_force, const Poco::DateTime time, bool post_only)
+      : Timestamped{std::move(time)}, symbol(symbol), clOrdID(std::move(clOrdID)), price(price), orderQty(orderQty), side(side), type(type), time_in_force(time_in_force), post_only(post_only)
   {
   }
 

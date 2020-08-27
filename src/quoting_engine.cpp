@@ -109,8 +109,8 @@ Models::TwoSidedQuote QuotingEngine::calc_quote(Models::MarketQuote &filtered_qu
   {
     Models::Quote bid(unrounded.bidPrice - quoting_parameters.price_interval * i, unrounded.bidSize + quoting_parameters.size_increment * i, Models::Side::Bid);
     Models::Quote ask(unrounded.askPrice + quoting_parameters.price_interval * i, unrounded.askSize + quoting_parameters.size_increment * i, Models::Side::Ask);
-    this->bids_cache.emplace_back(bid);
-    this->asks_cache.emplace_back(ask);
+    this->bids_cache.emplace_back(std::move(bid));
+    this->asks_cache.emplace_back(std::move(ask));
   }
 
   return Models::TwoSidedQuote(this->bids_cache, this->asks_cache, time);

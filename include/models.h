@@ -148,7 +148,7 @@ namespace Models
     TimeInForce time_in_force;
     bool post_only;
 
-    NewOrder(const std::string &symbol, const std::string &clOrdID, double price, double orderQty, Side side, OrderType type, TimeInForce time_in_force, Poco::DateTime time, bool post_only = true);
+    NewOrder(const std::string &symbol, std::string &&clOrdID, double price, double orderQty, Side side, OrderType type, TimeInForce time_in_force, Poco::DateTime time, bool post_only = true);
     json to_json() const;
   };
 

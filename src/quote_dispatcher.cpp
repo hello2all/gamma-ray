@@ -127,9 +127,8 @@ void QuoteDispatcher::converge_orders(std::vector<Models::Quote> &bids, std::vec
   {
     if ((buys_matched + sells_matched) >= sum)
     {
-      std::string clOrdID = order["clOrdID"].get<std::string>();
-      Models::CancelOrder cancel(clOrdID, time);
-      this->to_cancel.emplace_back(cancel);
+      Models::CancelOrder cancel(order["clOrdID"].get<std::string>(), time);
+      this->to_cancel.emplace_back(std::move(cancel));
     }
     else
     {
@@ -149,9 +148,8 @@ void QuoteDispatcher::converge_orders(std::vector<Models::Quote> &bids, std::vec
       {
         if ((p_desired_quote->size != order["leavesQty"].get<double>()) || (p_desired_quote->price != order["price"].get<double>()))
         {
-          std::string clOrdID = order["clOrdID"].get<std::string>();
-          Models::ReplaceOrder replace(clOrdID, p_desired_quote->price, p_desired_quote->size, time);
-          this->to_amend.emplace_back(replace);
+          Models::ReplaceOrder replace(order["clOrdID"].get<std::string>(), p_desired_quote->price, p_desired_quote->size, time);
+          this->to_amend.emplace_back(std::move(replace));
         }
       }
     }
@@ -159,19 +157,17 @@ void QuoteDispatcher::converge_orders(std::vector<Models::Quote> &bids, std::vec
 
   while (buys_matched < bids.size())
   {
-    std::string clOrdID = oe.generate_client_id();
     const Models::Quote *p_desired_quote = &bids[buys_matched];
-    Models::NewOrder new_order(this->details.pair, clOrdID, p_desired_quote->price, p_desired_quote->size, p_desired_quote->side, Models::OrderType::Limit, Models::TimeInForce::GTC, time, true);
-    this->to_create.emplace_back(new_order);
+    Models::NewOrder new_order(this->details.pair, oe.generate_client_id(), p_desired_quote->price, p_desired_quote->size, p_desired_quote->side, Models::OrderType::Limit, Models::TimeInForce::GTC, time, true);
+    this->to_create.emplace_back(std::move(new_order));
     ++buys_matched;
   }
 
   while (sells_matched < asks.size())
   {
-    std::string clOrdID = oe.generate_client_id();
     const Models::Quote *p_desired_quote = &asks[sells_matched];
-    Models::NewOrder new_order(this->details.pair, clOrdID, p_desired_quote->price, p_desired_quote->size, p_desired_quote->side, Models::OrderType::Limit, Models::TimeInForce::GTC, time, true);
-    this->to_create.emplace_back(new_order);
+    Models::NewOrder new_order(this->details.pair, oe.generate_client_id(), p_desired_quote->price, p_desired_quote->size, p_desired_quote->side, Models::OrderType::Limit, Models::TimeInForce::GTC, time, true);
+    this->to_create.emplace_back(std::move(new_order));
     ++sells_matched;
   }
 
