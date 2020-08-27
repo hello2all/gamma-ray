@@ -75,22 +75,12 @@ void QuoteDispatcher::on_new_quote(const void *, Models::TwoSidedQuote &two_side
 
 void QuoteDispatcher::on_order_update(const void *, long &n_orders)
 {
-  if (n_orders == 2 * this->pairs)
+  // remove left over orders if any
+  if (n_orders <= 2 * this->pairs)
     return;
   auto two_sided_quote = this->engine.get_latest();
   if (!two_sided_quote)
     return;
-
-  // bool enough = this->has_enough_margin(two_sided_quote.bid.price, two_sided_quote.bid.size, two_sided_quote.ask.price, two_sided_quote.ask.size);
-  // if (!enough)
-  // {
-  //   auto open_orders = this->oe.open_orders();
-  //   if (open_orders && (open_orders.value().size() > 0))
-  //   {
-  //     this->oe.cancel_all();
-  //   }
-  //   return;
-  // }
 
   bool rate_limited = this->rl.is_rate_limited();
   if (rate_limited)
@@ -104,13 +94,14 @@ void QuoteDispatcher::on_order_update(const void *, long &n_orders)
     return;
   }
 
-  // todo: target position
-
   this->converge_orders(two_sided_quote->bids, two_sided_quote->asks, Poco::DateTime());
 }
 
 void QuoteDispatcher::converge_orders(std::vector<Models::Quote> &bids, std::vector<Models::Quote> &asks, Poco::DateTime time)
 {
+  // prevent concurrent convergence
+  std::lock_guard<std::mutex> guard(this->converge_mutex);
+
   this->to_create.clear();
   this->to_amend.clear();
   this->to_cancel.clear();

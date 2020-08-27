@@ -22,6 +22,7 @@ private:
   std::vector<Models::NewOrder> to_create;
   std::vector<Models::ReplaceOrder> to_amend;
   std::vector<Models::CancelOrder> to_cancel;
+  std::mutex converge_mutex;
 
   bool has_enough_margin(double bid_price, double bid_size, double ask_price, double ask_size);
   void on_new_quote(const void *, Models::TwoSidedQuote &two_sided_quote);
