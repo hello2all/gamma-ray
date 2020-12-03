@@ -24,7 +24,8 @@ namespace Models
   enum class QuotingMode
   {
     Top,
-    Mid
+    Mid,
+    AvellanedaStoikov
   };
 
   enum class Side
@@ -62,7 +63,8 @@ namespace Models
   // === Mapping ===
   static std::unordered_map<std::string, QuotingMode> const quoting_mode_table = {
       {"Top", QuotingMode::Top},
-      {"Mid", QuotingMode::Mid}};
+      {"Mid", QuotingMode::Mid},
+      {"AvellanedaStoikov", QuotingMode::AvellanedaStoikov}};
 
   // === FUNCTIONS ===
   Poco::DateTime iso8601_to_datetime(const std::string &s);
@@ -122,7 +124,6 @@ namespace Models
   {
   public:
     QuotingMode mode;
-    double width;
     double size;
     unsigned int pairs;
     double price_interval;
@@ -133,7 +134,7 @@ namespace Models
     double trades_per_minute;
     double trade_rate_seconds;
 
-    QuotingParameters(QuotingMode mode, double width, double size, unsigned int pairs, double price_interval, double size_increment, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds);
+    QuotingParameters(QuotingMode mode, double size, unsigned int pairs, double price_interval, double size_increment, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds);
   };
 
   class NewOrder : public Timestamped

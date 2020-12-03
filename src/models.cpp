@@ -70,8 +70,8 @@ namespace Models
   {
   }
 
-  QuotingParameters::QuotingParameters(QuotingMode mode, double width, double size, unsigned int pairs, double price_interval, double size_increment, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds)
-      : mode(mode), width(width), size(size), pairs(pairs), price_interval(price_interval), size_increment(size_increment), target_base_position(target_base_position), position_divergence(position_divergence), skew_factor(skew_factor), trades_per_minute(trades_per_minute), trade_rate_seconds(trade_rate_seconds)
+  QuotingParameters::QuotingParameters(QuotingMode mode, double size, unsigned int pairs, double price_interval, double size_increment, double target_base_position, double position_divergence, double skew_factor, double trades_per_minute, double trade_rate_seconds)
+      : mode(mode), size(size), pairs(pairs), price_interval(price_interval), size_increment(size_increment), target_base_position(target_base_position), position_divergence(position_divergence), skew_factor(skew_factor), trades_per_minute(trades_per_minute), trade_rate_seconds(trade_rate_seconds)
   {
   }
 

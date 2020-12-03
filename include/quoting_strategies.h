@@ -1,6 +1,8 @@
 #pragma once
 #include <map>
 #include <algorithm>
+#include <cmath>
+#include "util.h"
 #include "models.h"
 #include "quoting_parameters.h"
 
@@ -12,10 +14,11 @@ namespace QuotingStrategies
     Models::MarketQuote &mq;
     Models::FairValue &fv;
     Models::QuotingParameters &qp;
+    double position;
     double min_tick_increment;
     double min_size_increment;
 
-    QuoteInput(Models::MarketQuote &mq, Models::FairValue &fv, Models::QuotingParameters &qp, double min_tick_increment, double min_size_increment);
+    QuoteInput(Models::MarketQuote &mq, Models::FairValue &fv, Models::QuotingParameters &qp, double position, double min_tick_increment, double min_size_increment);
     ~QuoteInput();
   };
 
@@ -52,8 +55,11 @@ namespace QuotingStrategies
 
   class Top : public QuotingStyle
   {
+  private:
+    double spread;
+
   public:
-    Top();
+    Top(double spread);
     ~Top();
 
     GeneratedQuote generate_quote(QuoteInput &input) override;
@@ -61,9 +67,31 @@ namespace QuotingStrategies
 
   class Mid : public QuotingStyle
   {
-    public:
-    Mid();
+  private:
+    double spread;
+
+  public:
+    Mid(double spread);
     ~Mid();
+
+    GeneratedQuote generate_quote(QuoteInput &input) override;
+  };
+
+  class AvellanedaStoikov : public QuotingStyle
+  {
+  private:
+    double gamma;
+    double sigma;
+    double k;
+
+    double settle_time;
+    const double ONE_DAY_IN_MS = 86400000;
+
+    double time_horizon();
+
+  public:
+    AvellanedaStoikov(double gamma, double sigma, double k);
+    ~AvellanedaStoikov();
 
     GeneratedQuote generate_quote(QuoteInput &input) override;
   };
