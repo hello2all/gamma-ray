@@ -1,3 +1,4 @@
+#!/bin/sh
 if [ ! -d "release" ]; then
   mkdir release
 fi

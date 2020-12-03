@@ -1,3 +1,4 @@
+#!/bin/sh
 if [ ! -d "debug" ]; then
   mkdir debug
 fi
