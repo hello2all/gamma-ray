@@ -110,8 +110,9 @@ void QuoteDispatcher::converge_orders(std::vector<Models::Quote> &bids, std::vec
   unsigned int sells_matched = 0;
   unsigned int sum = bids.size() + asks.size();
 
+  json existing_orders = this->oe.open_orders().value();
   // find orders can be amended
-  for (const auto &order : this->oe.open_orders().value())
+  for (const auto &order : existing_orders)
   {
     if ((buys_matched + sells_matched) >= sum)
     {
