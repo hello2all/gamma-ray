@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(GAMMA_RAY VERSION 0.0.0.0 LANGUAGES C CXX)
+project(GAMMA_RAY VERSION 0.0.0.1 LANGUAGES C CXX)
 
 set(CMAKE_CXX_FLAGS "-Wall -Werror -Wfatal-errors -Wpedantic -Wextra -Wmissing-include-dirs -pthread")
 add_compile_options(-Wall -Werror -Wfatal-errors -Wpedantic -Wextra -Wmissing-include-dirs -pthread)
