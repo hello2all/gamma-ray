@@ -1,0 +1,31 @@
+{
+  "websocketUrl": "wss://testnet.bitmex.com/realtime",
+  "httpUrl": "https://testnet.bitmex.com",
+  "apiKey": "iCDc_MrgK2bfZOaRKhz5K99A",
+  "apiSecret": "VJN9dBwrBInY2dY-SMVzDkb1suv9DQRwxmYKiEh7TcJVTg0w",
+  "contract": "XBTUSD",
+  "quotingParam": {
+    "quotingMode": "AvellanedaStoikov",
+    "size": 300,
+    "quotingModeParam": {
+      "AvellanedaStoikov": {
+        "gamma": 0.1,
+        "sigma": 0.025,
+        "k": 0.11593
+      },
+      "Top": {
+        "spread": 0.5
+      },
+      "Mid": {
+        "spread": 0.5
+      }
+    },
+    "pairs": 1,
+    "priceInterval": 0.5,
+    "sizeIncrement": 0,
+    "targetBasePosition": 0,
+    "positionOffset": 100000,
+    "skewFactor": 0,
+    "tradesPerMinute": 5
+  }
+}
