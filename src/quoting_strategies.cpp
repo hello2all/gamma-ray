@@ -112,8 +112,8 @@ namespace QuotingStrategies
 
   GeneratedQuote AvellanedaStoikov::generate_quote(QuoteInput &input)
   {
-    // position (flip the inverted position)
-    double p = input.position / input.fv.price;
+    // position
+    double p = input.position;
     // time horizon [0,1]
     double th = this->time_horizon();
     // reservation/indifference price r(s,t)
