@@ -12,7 +12,7 @@ This program is aimes to be a starting point for developing your own market make
 
 - Top, which tries to post 1 tick better than the existing best bid and ask prices in the orderbook, given a minimum spread contraint.
 - Mid, which post bid/ask orders with a fixed spread.
-- Avellaneda Stoikov, which is a high frequency market maker framework with a proper model, for more information you may read the paper [here](https://www.researchgate.net/publication/24086205_High_Frequency_Trading_in_a_Limit_Order_Book). A jupyter notebook is provided giving a sample method to calibrate model parameters.
+- Avellaneda Stoikov, which is a high frequency market maker framework with a proper model, for more information you may read the paper [here](https://www.researchgate.net/publication/24086205_High_Frequency_Trading_in_a_Limit_Order_Book). A jupyter notebook `doc/AS model calibration.ipynb` is provided giving a sample method to calibrate model parameters.
 
 As of now this program only supports one exchange: Bitmex, more exchanges may be added in the future depend on user request.
 
@@ -85,3 +85,7 @@ With `gamma-ray.json` config file in the same directory with the executable
 ```bash
 ./release/main
 ```
+
+## Deployment
+
+For the best latency, this bot should be deployed on AWS `eu-west-1c`.
