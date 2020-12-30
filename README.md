@@ -38,7 +38,7 @@ cd poco
 mkdir cmake-build && cd cmake-build
 cmake ..
 sudo cmake --build . --target install
-cd .. && rm -rf poco
+cd ../.. && rm -rf poco
 ```
 
 ### Build
@@ -69,7 +69,7 @@ A brief explaination of configurable parameteres:
 - **apiKey**: API key
 - **apiSecret**: API secret
 - **contract**: trading pair, currently supports only perpetual contracts such as `BTCUSD`, `ETHUSD` etc.
-- **quoingMode**: quoting strategy, you can choose from `Mid`, `Top` and `AvellanedaStoikov`.
+- **quotingMode**: quoting strategy, you can choose from `Mid`, `Top` and `AvellanedaStoikov`.
 - **size**: order size/quantity
 - **quotingModeParam**: quoting strategy specific parameters
 - **pairs**: how many price levels of bid ask pairs will be posted
