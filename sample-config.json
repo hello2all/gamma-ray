@@ -26,6 +26,7 @@
     "targetBasePosition": 0,
     "positionOffset": 100000,
     "skewFactor": 0,
-    "tradesPerMinute": 5
+    "tradesPerMinute": 5,
+    "tradeRateSeconds": 60
   }
 }
