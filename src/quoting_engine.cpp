@@ -176,10 +176,16 @@ bool QuotingEngine::get_skew_val(double &skew_val)
 bool QuotingEngine::get_position_val(double &position_val)
 {
   auto pos = this->pg.get_latest_position();
+
   if (!pos)
   {
     this->delete_quotes();
     return false;
+  }
+  else if (pos.value().size() == 0)
+  {
+    position_val = 0.0;
+    return true;
   }
   else
   {
