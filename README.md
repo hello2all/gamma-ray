@@ -89,3 +89,13 @@ With `gamma-ray.json` config file in the same directory with the executable
 ## Deployment
 
 For the best latency, this bot should be deployed on AWS `eu-west-1c`.
+
+## Donations❤️
+
+This project is still evolving and need your help to grow. If you find this project useful, please consider support the development of this project by donating using the following addresses. Testing HFT strategies replies on trading on live markets due to many technical constrains, which can be costly. Your contribution will keep this project free and open to the public.
+
+BTC: 3BMEXLjaNku2Sh73s2i1DZVTgKpDrzTSwk
+
+ETH: 0x9DFe1C3E906Ec27121e7921953CEdA5AaB558306
+
+Donators will have early access to new features and your feature requests will be prioritised.
