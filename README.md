@@ -99,3 +99,9 @@ BTC: 3BMEXLjaNku2Sh73s2i1DZVTgKpDrzTSwk
 ETH: 0x9DFe1C3E906Ec27121e7921953CEdA5AaB558306
 
 Donators will have early access to new features and your feature requests will be prioritised.
+
+## Join the community
+
+If you have questions or would like to contribute to the project, join our Discord channel. It's gonna be a sausage party, I promise :p
+
+https://discord.gg/ZAG6aCXfCs
