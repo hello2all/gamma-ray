@@ -41,3 +41,7 @@ release/
 
 # external
 external/
+doc/*_intensity.csv
+doc/data/quote/*
+doc/data/trade/*
+.idea/
