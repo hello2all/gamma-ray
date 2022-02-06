@@ -60,7 +60,7 @@ BitmexWebsocket::~BitmexWebsocket()
 
 void BitmexWebsocket::on_message(const std::string &raw)
 {
-  std::async(std::launch::async, [this]() { this->maintain_heartbeat(); });
+  (void)std::async(std::launch::async, [this]() { this->maintain_heartbeat(); });
   if (raw == "pong")
   {
     return;
